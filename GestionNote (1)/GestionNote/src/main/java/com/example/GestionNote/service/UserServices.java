@@ -15,13 +15,13 @@ public class UserServices {
     public List <User> getAllUsers(){
         return userRepository.findAll();
     }
-    public User getUserById(long id) {
+    public User getUserById( int id) {
         return userRepository.findById(id).orElse(null) ;
     }
     public User createUser( User userDetails){
        return  userRepository.save(userDetails) ;
     }
-    public User updateUser (long id, User userDetails){
+    public User updateUser (int id, User userDetails){
         User user = userRepository.findById(id).orElse(null);
         if (user != null) {
             user.setEmail(userDetails.getEmail());
@@ -32,7 +32,7 @@ public class UserServices {
         }
         return null;
     }
-    public void deleteUser(long id ){
+    public void deleteUser(int id ){
         userRepository.deleteById(id);
     }
 

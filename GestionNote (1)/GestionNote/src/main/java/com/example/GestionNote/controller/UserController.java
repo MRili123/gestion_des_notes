@@ -41,7 +41,7 @@ public class UserController {
 
     // Show form to edit user
     @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable Long id, Model model) {
+    public String showEditForm(@PathVariable int id, Model model) {
         User user = userServices.getUserById(id);
         model.addAttribute("user", user);
         return "User/editUser"; // maps to edit-user.html
@@ -49,14 +49,14 @@ public class UserController {
 
     // Handle edit user form submission
     @PostMapping("/edit/{id}")
-    public String updateUser(@PathVariable Long id, @ModelAttribute User user) {
+    public String updateUser(@PathVariable int id, @ModelAttribute User user) {
         userServices.updateUser(id, user);
         return "redirect:/users";
     }
 
     // Delete user
     @GetMapping("/delete/{id}")
-    public String deleteUser(@PathVariable Long id) {
+    public String deleteUser(@PathVariable int id) {
         userServices.deleteUser(id);
         return "redirect:/users";
     }
