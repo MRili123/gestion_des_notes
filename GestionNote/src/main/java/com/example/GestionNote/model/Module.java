@@ -1,6 +1,8 @@
 package com.example.GestionNote.model;
 
 import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
@@ -9,13 +11,21 @@ public class Module {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    private String title;
+    private String code; // m3rftch kifach dyr had lcode
+    private LocalDateTime createdAt;
 
-    private String name;
-    private String code;
-
-    @ManyToOne
+    // Relationships
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "level_id")
     private Level level;
+
+    @OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Enrollment> enrollments;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "professor_id")
+    private Professor professor;
 
     @OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Element> elements;
@@ -28,13 +38,15 @@ public class Module {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
     }
+
 
     public String getCode() {
         return code;
@@ -44,12 +56,36 @@ public class Module {
         this.code = code;
     }
 
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
     public Level getLevel() {
         return level;
     }
 
     public void setLevel(Level level) {
         this.level = level;
+    }
+
+    public Set<Enrollment> getEnrollments() {
+        return enrollments;
+    }
+
+    public void setEnrollments(Set<Enrollment> enrollments) {
+        this.enrollments = enrollments;
+    }
+
+    public Professor getProfessor() {
+        return professor;
+    }
+
+    public void setProfessor(Professor professor) {
+        this.professor = professor;
     }
 
     public Set<Element> getElements() {

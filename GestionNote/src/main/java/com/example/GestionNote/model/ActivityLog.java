@@ -1,19 +1,24 @@
 package com.example.GestionNote.model;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "logs")
-public class Log {
+@Table(name = "activity_logs")
+public class ActivityLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
     private String action;
-    private LocalDateTime timestamp;
-    private String ipAddress;
+    private LocalDateTime createdAt;
 
+    // Relationships
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    // Getters and Setters
     public Integer getId() {
         return id;
     }
@@ -30,20 +35,12 @@ public class Log {
         this.action = action;
     }
 
-    public LocalDateTime getTimestamp() {
-        return timestamp;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public String getIpAddress() {
-        return ipAddress;
-    }
-
-    public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     public User getUser() {
@@ -53,10 +50,4 @@ public class Log {
     public void setUser(User user) {
         this.user = user;
     }
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-
 }
