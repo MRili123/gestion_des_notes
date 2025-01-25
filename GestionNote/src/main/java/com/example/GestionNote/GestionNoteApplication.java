@@ -25,7 +25,7 @@ public class GestionNoteApplication {
 				admin.setPassword(passwordEncoder.encode("admin")); // Hash the password
 				admin.setEmail("admin@example.com");
 				admin.setFullname("Admin User");
-				admin.setRole("ROLE_ADMIN");
+				admin.setRole("ROLE_ADMIN_USER");
 				userRepository.save(admin);
 
 				System.out.println("Admin user created with username: admin and password: admin");

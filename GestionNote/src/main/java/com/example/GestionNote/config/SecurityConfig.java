@@ -13,7 +13,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/users/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/users/**").hasAuthority("ROLE_ADMIN_USER")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

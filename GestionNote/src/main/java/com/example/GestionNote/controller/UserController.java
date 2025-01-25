@@ -21,7 +21,7 @@ public class UserController {
     @GetMapping
     public String listUsers(Model model) {
         model.addAttribute("users", userServices.getAllUsers());
-        return "User/userslist";
+        return "AdminUser/UserList";
     }
 
 
@@ -29,7 +29,7 @@ public class UserController {
     @GetMapping("/create")
     public String showCreateForm(Model model) {
         model.addAttribute("user", new User());
-        return "User/creatUser"; // maps to create-user.html
+        return "AdminUser/CreatUser"; // maps to create-user.html
     }
 
     // Handle create user form submission
@@ -44,7 +44,7 @@ public class UserController {
     public String showEditForm(@PathVariable int id, Model model) {
         User user = userServices.getUserById(id);
         model.addAttribute("user", user);
-        return "User/editUser"; // maps to edit-user.html
+        return "AdminUser/EditUser"; // maps to edit-user.html
     }
 
     // Handle edit user form submission
