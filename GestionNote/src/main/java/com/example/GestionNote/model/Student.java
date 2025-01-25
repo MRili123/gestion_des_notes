@@ -1,6 +1,8 @@
 package com.example.GestionNote.model;
 
 import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
@@ -13,15 +15,22 @@ public class Student {
     private String cne;
     private String firstName;
     private String lastName;
-    private String email;
-    private String phone;
+    private Integer CurrentLevelId;
+    private LocalDateTime createdAt;
 
-    @ManyToOne
-    @JoinColumn(name = "level_id")
-    private Level level; // Current level of the student
+    // Relationships
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<StudentDataHistory> studentDataHistories;
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Grade> grades;
+    private Set<Exam> exams;
+
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Enrollment> enrollments;
+
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Deliberation> deliberations;
+
 
     public Integer getId() {
         return id;
@@ -55,35 +64,51 @@ public class Student {
         this.lastName = lastName;
     }
 
-    public String getEmail() {
-        return email;
+    public Integer getCurrentLevelId() {
+        return CurrentLevelId;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setCurrentLevelId(Integer currentLevelId) {
+        CurrentLevelId = currentLevelId;
     }
 
-    public String getPhone() {
-        return phone;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public Level getLevel() {
-        return level;
+    public Set<StudentDataHistory> getStudentDataHistories() {
+        return studentDataHistories;
     }
 
-    public void setLevel(Level level) {
-        this.level = level;
+    public void setStudentDataHistories(Set<StudentDataHistory> studentDataHistories) {
+        this.studentDataHistories = studentDataHistories;
     }
 
-    public Set<Grade> getGrades() {
-        return grades;
+    public Set<Exam> getExams() {
+        return exams;
     }
 
-    public void setGrades(Set<Grade> grades) {
-        this.grades = grades;
+    public void setExams(Set<Exam> exams) {
+        this.exams = exams;
+    }
+
+    public Set<Enrollment> getEnrollments() {
+        return enrollments;
+    }
+
+    public void setEnrollments(Set<Enrollment> enrollments) {
+        this.enrollments = enrollments;
+    }
+
+    public Set<Deliberation> getDeliberations() {
+        return deliberations;
+    }
+
+    public void setDeliberations(Set<Deliberation> deliberations) {
+        this.deliberations = deliberations;
     }
 }

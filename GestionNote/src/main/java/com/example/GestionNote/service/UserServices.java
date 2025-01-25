@@ -1,8 +1,6 @@
 package com.example.GestionNote.service;
 
-import com.example.GestionNote.model.Element;
 import com.example.GestionNote.model.User;
-import com.example.GestionNote.repository.ElementRepository;
 import com.example.GestionNote.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,7 +12,6 @@ import java.util.List;
 public class UserServices {
     @Autowired
      private UserRepository userRepository ;
-    private ElementRepository elementRepository;
     public List <User> getAllUsers(){
         return userRepository.findAll();
     }
@@ -28,7 +25,6 @@ public class UserServices {
         User user = userRepository.findById(id).orElse(null);
         if (user != null) {
             user.setEmail(userDetails.getEmail());
-            user.setFullname(userDetails.getFullname());
             user.setUsername(userDetails.getUsername());
             user.setPassword(userDetails.getPassword());
             return userRepository.save(user);
@@ -36,8 +32,5 @@ public class UserServices {
         return null;
     }
 
-    public void deleteUser(int id ){
-        userRepository.deleteById(id);
-    }
 
 }
