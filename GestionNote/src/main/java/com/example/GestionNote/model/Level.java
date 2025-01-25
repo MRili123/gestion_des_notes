@@ -1,26 +1,30 @@
 package com.example.GestionNote.model;
 
 import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
 @Table(name = "levels")
 public class Level {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer id;// Course
+    private String title; // titre du niveau (classe)
+    private String alias; // abbreviation du niveau
+    private LocalDateTime createdAt;
 
-    private String alias;
-
+    // Relationships
     @OneToMany(mappedBy = "level", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Student> students;
+    private Set<Deliberation> deliberations;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "filiere_id")
+    private Filiere filiere;
 
     @OneToMany(mappedBy = "level", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Module> modules;
 
-    @ManyToOne
-    @JoinColumn(name = "next_level_id")
-    private Level nextLevel;
 
     public Integer getId() {
         return id;
@@ -28,6 +32,14 @@ public class Level {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getAlias() {
@@ -38,27 +50,27 @@ public class Level {
         this.alias = alias;
     }
 
-    public Set<Student> getStudents() {
-        return students;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setStudents(Set<Student> students) {
-        this.students = students;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public Set<Module> getModules() {
-        return modules;
+    public Set<Deliberation> getDeliberations() {
+        return deliberations;
     }
 
-    public void setModules(Set<Module> modules) {
-        this.modules = modules;
+    public void setDeliberations(Set<Deliberation> deliberations) {
+        this.deliberations = deliberations;
     }
 
-    public Level getNextLevel() {
-        return nextLevel;
+    public Filiere getFiliere() {
+        return filiere;
     }
 
-    public void setNextLevel(Level nextLevel) {
-        this.nextLevel = nextLevel;
+    public void setFiliere(Filiere filiere) {
+        this.filiere = filiere;
     }
 }

@@ -5,18 +5,24 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "elements")
-public class Element {
+@Table(name = "enrollments")
+public class Enrollment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String title;
+    private String academicYear;
+    private Boolean passed;
     private LocalDateTime createdAt;
 
     // Relationships
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "student_id")
+    private Student student;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "module_id")
     private Module module;
+
 
     public Integer getId() {
         return id;
@@ -27,12 +33,20 @@ public class Element {
     }
 
 
-    public String getTitle() {
-        return title;
+    public String getAcademicYear() {
+        return academicYear;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setAcademicYear(String academicYear) {
+        this.academicYear = academicYear;
+    }
+
+    public Boolean getPassed() {
+        return passed;
+    }
+
+    public void setPassed(Boolean passed) {
+        this.passed = passed;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -43,11 +57,11 @@ public class Element {
         this.createdAt = createdAt;
     }
 
-    public Module getModule() {
-        return module;
+    public Student getStudent() {
+        return student;
     }
 
-    public void setModule(Module module) {
-        this.module = module;
+    public void setStudent(Student student) {
+        this.student = student;
     }
 }

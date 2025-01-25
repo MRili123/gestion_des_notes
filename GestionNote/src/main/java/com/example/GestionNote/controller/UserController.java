@@ -15,7 +15,13 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     @Autowired
-     private UserServices userServices ;
+    private UserServices userServices ;
+
+    // Home page
+    @GetMapping("/home")
+    public String home() {
+        return "users/home";
+    }
 
     // View all users
     @GetMapping
@@ -55,9 +61,9 @@ public class UserController {
     }
 
     // Delete user
-    @GetMapping("/delete/{id}")
-    public String deleteUser(@PathVariable int id) {
-        userServices.deleteUser(id);
-        return "redirect:/users";
-    }
+//    @GetMapping("/delete/{id}")
+//    public String deleteUser(@PathVariable int id) {
+//        userServices.deleteUser(id);
+//        return "redirect:/users";
+//    }
 }
