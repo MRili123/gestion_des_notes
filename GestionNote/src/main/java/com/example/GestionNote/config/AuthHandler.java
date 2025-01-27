@@ -22,11 +22,11 @@ public class AuthHandler implements AuthenticationSuccessHandler {
             Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
 
             if (roles.contains("ADMIN_USER")) {
-                response.sendRedirect("/users/home");
+                response.sendRedirect("/AdminUser/home");
             } else if (roles.contains("ADMIN_NOTES")) {
-                response.sendRedirect("/notes/home");
+                response.sendRedirect("/AdminNotes/home");
             } else if (roles.contains("ADMIN_SP")) {
-                response.sendRedirect("/sp/home");
+                response.sendRedirect("/AdminSp/home");
             } else {
                 response.sendRedirect("/auth/login");
             }
