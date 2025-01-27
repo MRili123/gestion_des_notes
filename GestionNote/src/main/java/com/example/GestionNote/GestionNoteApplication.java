@@ -23,7 +23,7 @@ public class GestionNoteApplication {
 	public CommandLineRunner createDefaultAdminUsers(UserRepository userRepository, PasswordEncoder passwordEncoder) {
 		return args -> {
 			// Add admin accounts if they don't exist
-			if (userRepository.findByUsername("admin_user").isEmpty()) {
+			if (userRepository.findAllByUsername("admin_user").isEmpty()) {
 				// Create the first admin user
 				User admin = new User();
 				admin.setFirstName("Admin");
@@ -41,7 +41,7 @@ public class GestionNoteApplication {
 
 				System.out.println("Admin user created with username: admin_user and password: admin_user");
 			}
-			if (userRepository.findByUsername("admin_sp").isEmpty()) {
+			if (userRepository.findAllByUsername("admin_sp").isEmpty()) {
 				// Create the first admin sp
 				User admin = new User();
 				admin.setFirstName("Admin");
@@ -59,14 +59,14 @@ public class GestionNoteApplication {
 
 				System.out.println("Admin user created with username: admin_sp and password: admin_sp");
 			}
-			if (userRepository.findByUsername("admin_notes").isEmpty()) {
+			if (userRepository.findAllByUsername("admin_notes").isEmpty()) {
 				// Create the first admin notes
 				User admin = new User();
 				admin.setFirstName("Admin");
 				admin.setLastName("Admin");
 				admin.setCin("G123456");
 				admin.setPhone("0612345678");
-				admin.setUsername("admin_sp");
+				admin.setUsername("admin_notes");
 				admin.setPassword(passwordEncoder.encode("admin_notes")); // Hash the password
 				admin.setEmail("admin_notes@email.com");
 				admin.setRole(Role.ADMIN_NOTES);
