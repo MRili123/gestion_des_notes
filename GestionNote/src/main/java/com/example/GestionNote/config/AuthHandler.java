@@ -26,7 +26,7 @@ public class AuthHandler implements AuthenticationSuccessHandler {
             } else if (roles.contains("ADMIN_NOTES")) {
                 response.sendRedirect("/notes/home");
             } else if (roles.contains("ADMIN_SP")) {
-                response.sendRedirect("/sp/home");
+                response.sendRedirect("/AdminSp/home");
             } else {
                 response.sendRedirect("/auth/login");
             }

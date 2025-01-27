@@ -16,6 +16,10 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/css/**", "/js/**", "/img/**", "/theme_assets/**", "/vendor_assets/**")
+                        .permitAll()
+                        .requestMatchers("/auth/login").permitAll()
+                        // Allow public access to the login page
                         .requestMatchers("/users/**").hasAuthority("ADMIN_USER")
                         .requestMatchers("/notes/**").hasAuthority("ADMIN_NOTES")
                         .requestMatchers("/sp/**").hasAuthority("ADMIN_SP")
