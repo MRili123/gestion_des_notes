@@ -2,35 +2,68 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Users List</title>
 </head>
 <body>
+<h1>User Management</h1>
 <table border="1">
     <thead>
     <tr>
-        <th>ID</th>
-        <th>Username</th>
+        <th>Enabled</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>CIN</th>
+        <th>Phone</th>
         <th>Email</th>
-        <th>Full Name</th>
-        <th> role </th>
+        <th>Username</th>
+        <th>Role</th>
+        <th>Created At</th>
+        <th>Last Login</th>
         <th>Actions</th>
+        <th>Save Changes</th>
     </tr>
     </thead>
     <tbody>
-    <!-- Iterate over the list of users -->
     <tr th:each="user : ${users}">
-        <td th:text="${user.id}">1</td>
-        <td th:text="${user.username}"></td>
-        <td th:text="${user.email}"></td>
-        <td th:text="${user.fullname}"></td>
-        <td th:text="${user.role}"></td>
         <td>
-            <a th:href="@{/users/edit/{id}(id=${user.id})}">Edit</a> |
-            <a th:href="@{/users/delete/{id}(id=${user.id})}">Delete</a>
+            <form th:action="@{/users/saveChanges}" method="post" onsubmit="setCheckboxValue(this)">
+                <input type="hidden" th:value="${user.id}" name="userId"/>
+                <input type="hidden" name="enabled" id="enabledHidden" value="false"/> <!-- Default value for 'enabled' -->
+                <input type="checkbox" name="enabled" id="enabledCheckbox" value="true" th:checked="${user.enabled}"/> <!-- Checkbox for 'enabled' -->
+        </td>
+        <td th:text="${user.firstName}">First Name</td>
+        <td th:text="${user.lastName}">Last Name</td>
+        <td th:text="${user.cin}">CIN</td>
+        <td th:text="${user.phone}">Phone</td>
+        <td th:text="${user.email}">Email</td>
+        <td th:text="${user.username}">Username</td>
+        <td th:text="${user.role}">Role</td>
+        <td th:text="${user.createdAt}">Created At</td>
+        <td th:text="${user.lastLogin}">Last Login</td>
+        <td>
+            <a href="#">Change Password</a>
+        </td>
+        <td>
+            <button type="submit">Save Changes</button>
+            </form>
         </td>
     </tr>
     </tbody>
 </table>
+
+<script>
+    function setCheckboxValue(form) {
+        var checkbox = form.querySelector("#enabledCheckbox");
+        var hiddenInput = form.querySelector("#enabledHidden");
+
+        // Set the hidden input value based on the checkbox's checked state
+        if (checkbox.checked) {
+            hiddenInput.value = "true"; // Set to 'true' if checked
+        } else {
+            hiddenInput.value = "false"; // Set to 'false' if unchecked
+        }
+    }
+</script>
 
 </body>
 </html>

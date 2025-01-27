@@ -20,18 +20,30 @@ public class UserController {
     // Home page
     @GetMapping("/home")
     public String home() {
-        return "users/home";
+        return "AdminUser/home";
     }
 
     // View all users
-    @GetMapping
+    @GetMapping("/list")
     public String listUsers(Model model) {
         model.addAttribute("users", userServices.getAllUsers());
         return "AdminUser/UserList";
     }
+    @PostMapping("/saveChanges")
+    public String saveChanges(@RequestParam boolean enabled, @RequestParam int userId) {
+        userServices.updateUserEnabled(userId, enabled);
+
+        return "redirect:/users/list"; // Should redirect to /users/list
+    }
 
 
-    // Show form to create user
+
+
+
+
+
+
+
     @GetMapping("/create")
     public String showCreateForm(Model model) {
         model.addAttribute("user", new User());
@@ -50,20 +62,15 @@ public class UserController {
     public String showEditForm(@PathVariable int id, Model model) {
         User user = userServices.getUserById(id);
         model.addAttribute("user", user);
-        return "AdminUser/EditUser"; // maps to edit-user.html
+        return "AdminUser/EditUser";
     }
 
-    // Handle edit user form submission
+
     @PostMapping("/edit/{id}")
     public String updateUser(@PathVariable int id, @ModelAttribute User user) {
         userServices.updateUser(id, user);
         return "redirect:/users";
     }
 
-    // Delete user
-//    @GetMapping("/delete/{id}")
-//    public String deleteUser(@PathVariable int id) {
-//        userServices.deleteUser(id);
-//        return "redirect:/users";
-//    }
+
 }

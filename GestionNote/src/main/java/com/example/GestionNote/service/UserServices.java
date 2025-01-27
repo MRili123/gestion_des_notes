@@ -13,15 +13,23 @@ import java.util.List;
 public class UserServices {
     @Autowired
      private UserRepository userRepository ;
-<<<<<<< HEAD
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-=======
->>>>>>> df69e0dc75fa16ce88a861e6568a29c337a53ca3
+
     public List <User> getAllUsers(){
         return userRepository.findAll();
     }
+    public void updateUserEnabled(int  Id, boolean enabled) {
+        // Get the user by ID
+        User user = userRepository.findById(Id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + Id));
+        user.setEnabled(enabled);  // Update the enabled status
+        userRepository.save(user); // Save the updated user back to the DB
+    }
+
+
     public User getUserById( int id) {
         return userRepository.findById(id).orElse(null) ;
     }
@@ -29,6 +37,7 @@ public class UserServices {
         userDetails.setPassword(passwordEncoder.encode(userDetails.getPassword()));
         return userRepository.save(userDetails);
     }
+
     public User updateUser(int id, User userDetails) {
         User user = userRepository.findById(id).orElse(null);
         if (user != null) {
