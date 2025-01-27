@@ -20,9 +20,9 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers("/auth/login").permitAll()
                         // Allow public access to the login page
-                        .requestMatchers("/users/**").hasAuthority("ADMIN_USER")
-                        .requestMatchers("/notes/**").hasAuthority("ADMIN_NOTES")
-                        .requestMatchers("/sp/**").hasAuthority("ADMIN_SP")
+                        .requestMatchers("/AdminUser/**").hasAuthority("ADMIN_USER")
+                        .requestMatchers("/AdminNotes/**").hasAuthority("ADMIN_NOTES")
+                        .requestMatchers("/AdminSp/**").hasAuthority("ADMIN_SP")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

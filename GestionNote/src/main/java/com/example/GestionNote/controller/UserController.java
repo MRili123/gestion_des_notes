@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @Controller
-@RequestMapping("/users")
+@RequestMapping("/AdminUser")
 public class UserController {
 
     @Autowired

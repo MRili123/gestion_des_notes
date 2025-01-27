@@ -26,9 +26,9 @@ public class AuthController implements ErrorController {
         if (authentication != null) {
             Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
             if (roles.contains("ADMIN_USER")) {
-                return "redirect:/users/home";
+                return "redirect:/AdminUser/home";
             } else if (roles.contains("ADMIN_NOTES")) {
-                return "redirect:/notes/home";
+                return "redirect:/AdminNotes/home";
             } else if (roles.contains("ADMIN_SP")) {
                 return "redirect:/AdminSp/home";
             }
