@@ -1,14 +1,11 @@
 package com.example.GestionNote.model;
 
 import jakarta.persistence.*;
-
-
 import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
 @Table(name = "users")
-
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,7 +15,11 @@ public class User {
     private String lastName;
     private String cin;
     private String phone;
+
+    @Column(unique = true)  // Ensure unique email
     private String email;
+
+    @Column(unique = true)  // Ensure unique username
     private String username;
 
     @Enumerated(EnumType.STRING)
@@ -40,7 +41,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<LoginLog> loginLogs;
 
-
+    // Getters and setters
     public Integer getId() {
         return id;
     }
