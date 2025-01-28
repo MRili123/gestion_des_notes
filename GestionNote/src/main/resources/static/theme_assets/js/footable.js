@@ -14,7 +14,8 @@ $(function() {
               "enabled": true
           },
       components: {
-          filtering: FooTable.MyFiltering
+		  // Remove the drop down filtering option from adv-table
+          // filtering: FooTable.MyFiltering
       },
     }); 
   });
