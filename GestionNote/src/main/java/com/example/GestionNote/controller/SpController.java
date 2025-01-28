@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
@@ -17,9 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class SpController {
     @Autowired
     private UserRepository userRepository;
-    @RequestMapping("/home")
-    public String home(Model model) {
-// Get the authenticated user's details
+
+    // Make the user object accessible to all controller routes
+    @ModelAttribute
+    public void addUserToModel(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
             Object principal = authentication.getPrincipal();
@@ -27,11 +29,33 @@ public class SpController {
                 UserDetails userDetails = (UserDetails) principal;
                 String username = userDetails.getUsername();
                 User user = userRepository.findByUsername(username);
-
-                // Add the username to the model
                 model.addAttribute("user", user);
             }
         }
+    }
+
+    @RequestMapping("/home")
+    public String home() {
         return "AdminSp/home";
+    }
+
+    @RequestMapping("/filieres")
+    public String filiere() {
+        return "AdminSp/filieres";
+    }
+
+    @RequestMapping("/classes")
+    public String classes() {
+        return "AdminSp/classes";
+    }
+
+    @RequestMapping("/modules")
+    public String modules() {
+        return "AdminSp/modules";
+    }
+
+    @RequestMapping("/elements")
+    public String elements() {
+        return "AdminSp/elements";
     }
 }
