@@ -50,7 +50,7 @@
         <div class="navbar-left">
             <a href="" class="sidebar-toggle">
                 <img class="svg" src="/img/svg/bars.svg" alt="img"></a>
-            <a class="navbar-brand" href="#"><img class="dark" src="/img/logo_dark.png" alt="svg"><img class="light" src="/img/logo_white.png" alt="img"></a>
+            <a class="navbar-brand" th:href="@{/AdminSp/home}"><img class="dark" src="/img/logo_dark.png" alt="svg"><img class="light" src="/img/logo_white.png" alt="img"></a>
             <div class="top-menu">
 
                 <div class="strikingDash-top-menu position-relative">
@@ -86,6 +86,9 @@
                                 </li>
                                 <li class="l_sidebar">
                                     <a th:href="@{/AdminSp/elements}" data-layout="light">Elements</a>
+                                </li>
+                                <li class="l_sidebar">
+                                    <a th:href="@{/AdminSp/professors}" data-layout="light">Professors</a>
                                 </li>
                             </ul>
                         </li>
@@ -178,6 +181,12 @@
                             <span class="menu-text">Elements</span>
                         </a>
                     </li>
+                    <li>
+                        <a th:href="@{/AdminSp/professors}" class="">
+                            <span data-feather="user" class="nav-icon"></span>
+                            <span class="menu-text">Professors</span>
+                        </a>
+                    </li>
 
                     <li class="has-child">
                         <a href="#" class="">
@@ -209,25 +218,12 @@
     <div class="contents">
 
         <div class="container-fluid">
-            <div class="social-dash-wrap">
-                <div class="row">
-                    <div class="col-lg-12">
 
-                        <div class="breadcrumb-main">
-                            <h4 class="text-capitalize breadcrumb-title"><span layout:fragment="title">Title</span></h4>
-                            <div class="breadcrumb-action justify-content-center flex-wrap">
-
-
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
                 <div layout:fragment="actual_content">
                         <!--here is the actual content for each page-->
 
                 </div>
-            </div>
+
         </div>
 
     </div>
