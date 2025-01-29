@@ -2,8 +2,10 @@ package com.example.GestionNote.controller;
 
 import com.example.GestionNote.DTO.CustomUserDetails;
 import com.example.GestionNote.DTO.ProfessorDTO;
+import com.example.GestionNote.model.Filiere;
 import com.example.GestionNote.model.Professor;
 import com.example.GestionNote.model.User;
+import com.example.GestionNote.repository.FiliereRepository;
 import com.example.GestionNote.repository.ProfessorRepository;
 import com.example.GestionNote.repository.UserRepository;
 import com.example.GestionNote.service.UserServices;
@@ -28,6 +30,8 @@ public class SpController {
     private UserRepository userRepository;
     @Autowired
     private ProfessorRepository professorRepository;
+    @Autowired
+    private FiliereRepository filiereRepository;
 
     // Make the user object accessible to all controller routes
     @ModelAttribute
@@ -49,29 +53,9 @@ public class SpController {
         return "AdminSp/home";
     }
 
-    @RequestMapping("/filieres")
-    public String filiere() {
-        return "AdminSp/filieres";
-    }
-
-    @RequestMapping("/classes")
-    public String classes() {
-        return "AdminSp/classes";
-    }
-
-    @RequestMapping("/modules")
-    public String modules() {
-        return "AdminSp/modules";
-    }
-
-    @RequestMapping("/elements")
-    public String elements() {
-        return "AdminSp/elements";
-    }
-
     @RequestMapping("/professors")
     public String professors(Model model) {
-        List<Professor> professors = professorRepository.findByDeletedFalse();
+        List<Professor> professors = professorRepository.findByDeleted(false);
         model.addAttribute("professors", professors);
         return "AdminSp/professors";
     }
@@ -112,4 +96,75 @@ public class SpController {
         professorRepository.save(professor);
         return "redirect:/AdminSp/professors";
     }
+
+    @RequestMapping("/filieres")
+    public String filiere(Model model) {
+        List<Filiere> filieres = filiereRepository.findByDeleted(false);
+        List<Professor> professors = professorRepository.findByDeleted(false);
+        model.addAttribute("filieres", filieres);
+        model.addAttribute("professors", professors);
+        return "AdminSp/filieres";
+    }
+
+    @RequestMapping("/filieres/delete/{id}")
+    public String deleteFiliere(@PathVariable int id) {
+        Filiere filiere = filiereRepository.findById(id).orElse(null);
+        if (filiere != null) {
+            filiere.setDeleted(true);
+            filiereRepository.save(filiere);
+        }
+        return "redirect:/AdminSp/filieres";
+    }
+
+    @RequestMapping("/filieres/add")
+    public String addFiliere(@RequestBody Filiere newFiliere) {
+        Filiere filiere = new Filiere();
+        Professor professor = professorRepository.findById(newFiliere.getCoordinator().getId()).orElse(null);
+        if (professor != null) {
+            filiere.setCoordinator(professor);
+            filiere.setTitle(newFiliere.getTitle());
+            filiere.setAlias(newFiliere.getAlias());
+            filiere.setAccreditationStart(newFiliere.getAccreditationStart());
+            filiere.setAccreditationEnd(newFiliere.getAccreditationEnd());
+            filiere.setCreatedAt(LocalDateTime.now());
+            filiereRepository.save(filiere);
+        }
+        return "redirect:/AdminSp/filieres";
+    }
+
+    @RequestMapping("/filieres/edit/{id}")
+    public String editFiliere(@PathVariable int id, @RequestBody Filiere updatedFiliere) {
+        Filiere filiere = filiereRepository.findById(id).orElse(null);
+        if (filiere != null) {
+            Professor professor = professorRepository.findById(updatedFiliere.getCoordinator().getId()).orElse(null);
+            if (professor != null) {
+                filiere.setCoordinator(professor);
+                filiere.setTitle(updatedFiliere.getTitle());
+                filiere.setAlias(updatedFiliere.getAlias());
+                filiere.setAccreditationStart(updatedFiliere.getAccreditationStart());
+                filiere.setAccreditationEnd(updatedFiliere.getAccreditationEnd());
+                filiere.setUpdatedAt(LocalDateTime.now());
+                filiereRepository.save(filiere);
+            }
+        }
+        return  "redirect:/AdminSp/filieres";
+    }
+
+    @RequestMapping("/classes")
+    public String classes() {
+        return "AdminSp/classes";
+    }
+
+    @RequestMapping("/modules")
+    public String modules() {
+        return "AdminSp/modules";
+    }
+
+    @RequestMapping("/elements")
+    public String elements() {
+        return "AdminSp/elements";
+    }
+
+
+
 }
