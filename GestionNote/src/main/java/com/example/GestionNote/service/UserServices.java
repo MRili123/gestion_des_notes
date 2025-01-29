@@ -28,8 +28,14 @@ public class UserServices {
         user.setEnabled(enabled);  // Update the enabled status
         userRepository.save(user); // Save the updated user back to the DB
     }
+    public boolean checkPassword(User user, String oldPassword) {
 
+        return user.getPassword().equals(oldPassword);
+    }
 
+    public void save(User user) {
+        userRepository.save(user);
+    }
     public User getUserById( int id) {
         return userRepository.findById(id).orElse(null) ;
     }

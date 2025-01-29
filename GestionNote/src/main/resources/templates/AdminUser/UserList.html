@@ -3,67 +3,217 @@
 <head>
     <meta charset="UTF-8">
     <title>Users List</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- inject:css -->
+    <link rel="stylesheet" href="/vendor_assets/css/bootstrap/bootstrap.css">
+    <link rel="stylesheet" href="/vendor_assets/css/daterangepicker.css">
+    <link rel="stylesheet" href="/vendor_assets/css/fontawesome.css">
+    <link rel="stylesheet" href="/vendor_assets/css/footable.standalone.min.css">
+    <link rel="stylesheet" href="/vendor_assets/css/fullcalendar@5.2.0.css">
+    <link rel="stylesheet" href="/vendor_assets/css/jquery-jvectormap-2.0.5.css">
+    <link rel="stylesheet" href="/vendor_assets/css/jquery.mCustomScrollbar.min.css">
+    <link rel="stylesheet" href="/vendor_assets/css/leaflet.css">
+    <link rel="stylesheet" href="/vendor_assets/css/line-awesome.min.css">
+    <link rel="stylesheet" href="/vendor_assets/css/magnific-popup.css">
+    <link rel="stylesheet" href="/vendor_assets/css/MarkerCluster.css">
+    <link rel="stylesheet" href="/vendor_assets/css/MarkerCluster.Default.css">
+    <link rel="stylesheet" href="/vendor_assets/css/select2.min.css">
+    <link rel="stylesheet" href="/vendor_assets/css/slick.css">
+    <link rel="stylesheet" href="/vendor_assets/css/star-rating-svg.css">
+    <link rel="stylesheet" href="/vendor_assets/css/trumbowyg.min.css">
+    <link rel="stylesheet" href="/vendor_assets/css/wickedpicker.min.css">
+
+    <!-- endinject -->
+
+    <link rel="icon" type="image/png" sizes="16x16" href="img/favicon.png">
 </head>
 <body>
-<h1>User Management</h1>
-<table border="1">
-    <thead>
-    <tr>
-        <th>Enabled</th>
-        <th>First Name</th>
-        <th>Last Name</th>
-        <th>CIN</th>
-        <th>Phone</th>
-        <th>Email</th>
-        <th>Username</th>
-        <th>Role</th>
-        <th>Created At</th>
-        <th>Last Login</th>
-        <th>Actions</th>
-        <th>Save Changes</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="user : ${users}">
-        <td>
-            <form th:action="@{/users/saveChanges}" method="post" onsubmit="setCheckboxValue(this)">
-                <input type="hidden" th:value="${user.id}" name="userId"/>
-                <input type="hidden" name="enabled" id="enabledHidden" value="false"/> <!-- Default value for 'enabled' -->
-                <input type="checkbox" name="enabled" id="enabledCheckbox" value="true" th:checked="${user.enabled}"/> <!-- Checkbox for 'enabled' -->
-        </td>
-        <td th:text="${user.firstName}">First Name</td>
-        <td th:text="${user.lastName}">Last Name</td>
-        <td th:text="${user.cin}">CIN</td>
-        <td th:text="${user.phone}">Phone</td>
-        <td th:text="${user.email}">Email</td>
-        <td th:text="${user.username}">Username</td>
-        <td th:text="${user.role}">Role</td>
-        <td th:text="${user.createdAt}">Created At</td>
-        <td th:text="${user.lastLogin}">Last Login</td>
-        <td>
-            <a href="#">Change Password</a>
-        </td>
-        <td>
-            <button type="submit">Save Changes</button>
-            </form>
-        </td>
-    </tr>
-    </tbody>
-</table>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>User Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1>User Management</h1>
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+        <tr>
+            <th>Enabled</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>CIN</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Username</th>
+            <th>Role</th>
+            <th>Created At</th>
+            <th>Last Login</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Loop through users dynamically -->
+        <tr th:each="user : ${users}">
+            <td>
+
+                <input type="hidden" name="enabled" id="enabledHidden" value="false" />
+
+
+                <input type="checkbox" name="enabled" class="enabledCheckbox" value="true" th:checked="${user.enabled}" />
+
+                >
+
+
+            </td>
+            <!-- User Details -->
+            <td th:text="${user.firstName}">First Name</td>
+            <td th:text="${user.lastName}">Last Name</td>
+            <td th:text="${user.cin}">CIN</td>
+            <td th:text="${user.phone}">Phone</td>
+            <td th:text="${user.email}">Email</td>
+            <td th:text="${user.username}">Username</td>
+            <td th:text="${user.role}">Role</td>
+            <td th:text="${user.createdAt}">Created At</td>
+            <td th:text="${user.lastLogin}">Last Login</td>
+            <!-- Actions -->
+            <td>
+                <a href="#" class="btn btn-primary btn-sm"
+                   data-toggle="modal"
+                   data-target="#new-member"
+                   th:data-id="${user.id}"
+                   th:data-enabled="${user.enabled}"
+                   th:data-role="${user.role}">
+                    Edit
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal for Editing User -->
+<div class="modal fade" id="new-member" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/users/saveChanges}" method="post">
+                    <!-- Hidden input for user ID -->
+                    <input type="hidden" id="modalUserId" name="userId" />
+
+                    <!-- Enabled checkbox -->
+                    <div class="form-group mb-3">
+                        <input type="hidden" name="enabled" id="modalEnabledHidden" value="false" />
+
+                        <label for="modalEnabled">Enabled</label>
+                        <!-- Checkbox for 'enabled' -->
+                        <input type="checkbox" id="modalEnabled" name="enabled" value="true"
+                               onclick="document.getElementById('modalEnabledHidden').value = this.checked ? 'true' : 'false';"
+
+                    </div>
+
+                    <!-- Role selection -->
+                    <div class="form-group mb-3">
+                        <label for="modalRole">Role</label>
+                        <select id="modalRole" name="role" class="form-select">
+                            <option value="ADMIN_SP">ADMIN_SP</option>
+                            <option value="ADMIN_NOTES">ADMIN_NOTES</option>
+                        </select>
+                    </div>
+                    <div class="form-group mb-20">
+                        <input type="text" class="form-control"  placeholder="new password">
+                    </div>
+                    <div class="form-group mb-20">
+                        <input type="text" class="form-control"  placeholder="confirm password">
+                    </div>
+
+                    <!-- Save and Cancel buttons -->
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary me-2">Save Changes</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
-    function setCheckboxValue(form) {
-        var checkbox = form.querySelector("#enabledCheckbox");
-        var hiddenInput = form.querySelector("#enabledHidden");
 
-        // Set the hidden input value based on the checkbox's checked state
-        if (checkbox.checked) {
-            hiddenInput.value = "true"; // Set to 'true' if checked
-        } else {
-            hiddenInput.value = "false"; // Set to 'false' if unchecked
-        }
-    }
+
+
+
+    document.querySelectorAll('a[data-toggle="modal"]').forEach(button => {
+        button.addEventListener('click', function () {
+            const userId = this.getAttribute('data-id');
+            const enabled = this.getAttribute('data-enabled');
+            const role = this.getAttribute('data-role');
+
+            // Update the modal inputs with the corresponding user data
+            document.querySelector('#modalUserId').value = userId;
+            document.querySelector('#modalEnabled').checked = enabled === 'true';
+            document.querySelector('#modalRole').value = role;
+
+            // If checkbox is unchecked, set the hidden input value to 'false'
+            document.querySelector('#modalEnabledHidden').value = enabled === 'true' ? 'true' : 'false';
+        });
+    });
+
+
+
 </script>
-
+<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDduF2tLXicDEPDMAtC6-NLOekX0A5vlnY"></script>
+<!-- inject:js -->
+<script src="/vendor_assets/js/jquery/jquery-3.5.1.min.js"></script>
+<script src="/vendor_assets/js/jquery/jquery-ui.js"></script>
+<script src="/vendor_assets/js/bootstrap/popper.js"></script>
+<script src="/vendor_assets/js/bootstrap/bootstrap.min.js"></script>
+<script src="/vendor_assets/js/moment/moment.min.js"></script>
+<script src="/vendor_assets/js/accordion.js"></script>
+<script src="/vendor_assets/js/autoComplete.js"></script>
+<script src="/vendor_assets/js/Chart.min.js"></script>
+<script src="/vendor_assets/js/charts.js"></script>
+<script src="/vendor_assets/js/daterangepicker.js"></script>
+<script src="/vendor_assets/js/drawer.js"></script>
+<script src="/vendor_assets/js/dynamicBadge.js"></script>
+<script src="/vendor_assets/js/dynamicCheckbox.js"></script>
+<script src="/vendor_assets/js/feather.min.js"></script>
+<script src="/vendor_assets/js/footable.min.js"></script>
+<script src="/vendor_assets/js/fullcalendar@5.2.0.js"></script>
+<script src="/vendor_assets/js/google-chart.js"></script>
+<script src="/vendor_assets/js/jquery-jvectormap-2.0.5.min.js"></script>
+<script src="/vendor_assets/js/jquery-jvectormap-world-mill-en.js"></script>
+<script src="/vendor_assets/js/jquery.countdown.min.js"></script>
+<script src="/vendor_assets/js/jquery.filterizr.min.js"></script>
+<script src="/vendor_assets/js/jquery.magnific-popup.min.js"></script>
+<script src="/vendor_assets/js/jquery.mCustomScrollbar.min.js"></script>
+<script src="/vendor_assets/js/jquery.peity.min.js"></script>
+<script src="/vendor_assets/js/jquery.star-rating-svg.min.js"></script>
+<script src="/vendor_assets/js/leaflet.js"></script>
+<script src="/vendor_assets/js/leaflet.markercluster.js"></script>
+<script src="/vendor_assets/js/loader.js"></script>
+<script src="/vendor_assets/js/message.js"></script>
+<script src="/vendor_assets/js/moment.js"></script>
+<script src="/vendor_assets/js/muuri.min.js"></script>
+<script src="/vendor_assets/js/notification.js"></script>
+<script src="/vendor_assets/js/popover.js"></script>
+<script src="/vendor_assets/js/select2.full.min.js"></script>
+<script src="/vendor_assets/js/slick.min.js"></script>
+<script src="/vendor_assets/js/trumbowyg.min.js"></script>
+<script src="/vendor_assets/js/wickedpicker.min.js"></script>
+<script src="/theme_assets/js/drag-drop.js"></script>
+<script src="/theme_assets/js/footable.js"></script>
+<script src="/theme_assets/js/full-calendar.js"></script>
+<script src="/theme_assets/js/googlemap-init.js"></script>
+<script src="/theme_assets/js/icon-loader.js"></script>
+<script src="/theme_assets/js/jvectormap-init.js"></script>
+<script src="/theme_assets/js/leaflet-init.js"></script>
+<script src="/theme_assets/js/main.js"></script>
 </body>
 </html>
