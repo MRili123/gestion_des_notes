@@ -4,10 +4,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/notes")
+@RequestMapping("/AdminNotes")
 public class NotesController {
     @RequestMapping("/home")
     public String home() {
-        return "notes/home";
+        return "AdminNotes/home";
     }
 }

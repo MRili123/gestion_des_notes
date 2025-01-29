@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 
 @Controller
-@RequestMapping("/users")
+@RequestMapping("/AdminUser")
 public class UserController {
 
     @Autowired
