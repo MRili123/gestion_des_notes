@@ -17,6 +17,8 @@ public class Filiere {
     private LocalDate accreditationStart; // Date de debut d'accreditation
     private LocalDate accreditationEnd;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private Boolean deleted = false;
 
     // Relationships
     @OneToMany(mappedBy = "filiere", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -88,5 +90,21 @@ public class Filiere {
 
     public void setCoordinator(Professor coordinator) {
         this.coordinator = coordinator;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

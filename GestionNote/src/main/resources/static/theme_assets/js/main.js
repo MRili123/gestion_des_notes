@@ -820,7 +820,7 @@
     allowClear: true,
   });
 
-  $("#select-search,.kb__select").select2({
+  $("#select-search,#select-search-add,#select-search-edit,.kb__select").select2({
     placeholder: "Search a person",
     dropdownCssClass: "category-member",
     allowClear: true,
