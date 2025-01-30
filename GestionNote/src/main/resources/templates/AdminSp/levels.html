@@ -337,11 +337,11 @@
                 contentType: "application/json",
                 data: JSON.stringify(updatedData),
                 success: function (response) {
-                    alert("Filiere updated successfully!");
+                    alert(response);
                     location.reload(); // Reload the page to see the updated data
                 },
                 error: function (error) {
-                    alert("Error updating filiere.");
+                    alert(error);
                 }
             });
         });
@@ -362,12 +362,12 @@
                     type: "DELETE",
                     success: function (response) {
                         // Handle success (e.g., remove the row from the table)
-                        alert("Filiere deleted successfully!");
+                        alert(response);
                         $(`a[data-id="${levelIdToDelete}"]`).closest("tr").remove(); // Remove the row from the table
                     },
                     error: function (error) {
                         // Handle error
-                        alert("Error deleting filiere.");
+                        alert(error);
                     }
                 });
             }
@@ -391,11 +391,11 @@
                 contentType: "application/json",
                 data: JSON.stringify(newLevel),
                 success: function (response) {
-                    alert("Level added successfully!");
+                    alert(response);
                     location.reload(); // Reload the page to see the new data
                 },
                 error: function (error) {
-                    alert("Error adding level.");
+                    alert(error);
                 }
             });
         });

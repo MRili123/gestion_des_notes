@@ -330,7 +330,6 @@
                 levelId: $("#select-search-edit").val(),
                 teacherId: $("#select-teacher-edit").val()
             };
-            console.log(moduleId);
 
             // Send the updated data to the server using AJAX
             $.ajax({
@@ -339,11 +338,11 @@
                 contentType: "application/json",
                 data: JSON.stringify(updatedData),
                 success: function (response) {
-                    alert("Module updated successfully!");
+                    alert(response);
                     location.reload(); // Reload the page to see the updated data
                 },
                 error: function (error) {
-                    alert("Error updating filiere.");
+                    alert(error);
                 }
             });
         });
@@ -364,12 +363,12 @@
                     type: "DELETE",
                     success: function (response) {
                         // Handle success (e.g., remove the row from the table)
-                        alert("Module deleted successfully!");
+                        alert(response);
                         $(`a[data-id="${moduleIdToDelete}"]`).closest("tr").remove(); // Remove the row from the table
                     },
                     error: function (error) {
                         // Handle error
-                        alert("Error deleting filiere.");
+                        alert(error);
                     }
                 });
             }
@@ -393,11 +392,11 @@
                 contentType: "application/json",
                 data: JSON.stringify(newModule),
                 success: function (response) {
-                    alert("Module added successfully!");
+                    alert(response);
                     location.reload(); // Reload the page to see the new data
                 },
                 error: function (error) {
-                    alert("Error adding module.");
+                    alert(error);
                 }
             });
         });
