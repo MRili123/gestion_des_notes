@@ -322,8 +322,6 @@
                 phone: $("#inputPhone").val()
             };
 
-            console.log(professorId);
-
             // Send the updated data to the server using AJAX
             $.ajax({
                 url: `/AdminSp/professors/edit/` + professorId, // URL for the update request
@@ -331,11 +329,11 @@
                 contentType: "application/json",
                 data: JSON.stringify(updatedData),
                 success: function (response) {
-                    alert("Professor updated successfully!");
+                    alert(response);
                     location.reload(); // Reload the page to see the updated data
                 },
                 error: function (error) {
-                    alert("Error updating professor.");
+                    alert(error);
                 }
             });
         });
@@ -356,12 +354,12 @@
                     type: "DELETE",
                     success: function (response) {
                         // Handle success (e.g., remove the row from the table)
-                        alert("Professor deleted successfully!");
+                        alert(response);
                         $(`a[data-id="${professorIdToDelete}"]`).closest("tr").remove(); // Remove the row from the table
                     },
                     error: function (error) {
                         // Handle error
-                        alert("Error deleting professor.");
+                        alert(error);
                     }
                 });
             }
@@ -378,7 +376,6 @@
                 cin: $("#inputCINAdd").val(),
                 phone: $("#inputPhoneAdd").val()
             };
-            console.log(newProfessor);
             // Send the data to the server using AJAX
             $.ajax({
                 url: '/AdminSp/professors/add', // URL for the add request
@@ -386,11 +383,11 @@
                 contentType: "application/json",
                 data: JSON.stringify(newProfessor),
                 success: function (response) {
-                    alert("Professor added successfully!");
+                    alert(response);
                     location.reload(); // Reload the page to see the new data
                 },
                 error: function (error) {
-                    alert("Error adding professor.");
+                    alert(error);
                 }
             });
         });
