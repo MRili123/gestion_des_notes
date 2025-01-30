@@ -1,56 +1,25 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{AdminUser/layout.html}">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-    <!-- inject:css-->
-
-    <link rel="stylesheet" href="/vendor_assets/css/bootstrap/bootstrap.css">
-
-    <link rel="stylesheet" href="/vendor_assets/css/daterangepicker.css">
-
-    <link rel="stylesheet" href="/vendor_assets/css/fontawesome.css">
-
-    <link rel="stylesheet" href="/vendor_assets/css/footable.standalone.min.css">
-
-    <link rel="stylesheet" href="/vendor_assets/css/fullcalendar@5.2.0.css">
-
-    <link rel="stylesheet" href="/vendor_assets/css/jquery-jvectormap-2.0.5.css">
-
-    <link rel="stylesheet" href="/vendor_assets/css/jquery.mCustomScrollbar.min.css">
-
-    <link rel="stylesheet" href="/vendor_assets/css/leaflet.css">
-
-    <link rel="stylesheet" href="/vendor_assets/css/line-awesome.min.css">
-
-    <link rel="stylesheet" href="/vendor_assets/css/magnific-popup.css">
-
-    <link rel="stylesheet" href="/vendor_assets/css/MarkerCluster.css">
-
-    <link rel="stylesheet" href="/vendor_assets/css/MarkerCluster.Default.css">
-
-    <link rel="stylesheet" href="/vendor_assets/css/select2.min.css">
-
-    <link rel="stylesheet" href="/vendor_assets/css/slick.css">
-
-    <link rel="stylesheet" href="/vendor_assets/css/star-rating-svg.css">
-
-    <link rel="stylesheet" href="/vendor_assets/css/trumbowyg.min.css">
-
-
-    <link rel="icon" type="image/png" sizes="16x16" href="img/favicon.png">
-
-    <link rel="stylesheet" href="style.css">
-
+    <title layout:fragment="title">Home - Admin SP</title>
 </head>
 <body>
-<h1>This is the dedicated section for ADMIN USER</h1>
-<a th:href="@{/logout}">
-    <button >logout</button>
-</a>
+<span layout:fragment="title">Home</span>
+
+<div layout:fragment="actual_content" >
+    <div class="col-lg-12">
+
+        <div class="breadcrumb-main">
+            <h4 class="text-capitalize breadcrumb-title">Welcome to Admin user</h4>
+        </div>
+        <p>Here you have access for Structure and Pedagogical Management. Click on the links in the sidebar to navigate</p>
+    </div>
+
+</div>
 
 </body>
 </html>
-

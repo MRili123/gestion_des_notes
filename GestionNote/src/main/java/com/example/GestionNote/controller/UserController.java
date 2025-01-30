@@ -3,8 +3,12 @@ package com.example.GestionNote.controller;
 
 import com.example.GestionNote.model.Role;
 import com.example.GestionNote.model.User;
+import com.example.GestionNote.repository.UserRepository;
 import com.example.GestionNote.service.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,12 +21,29 @@ import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/AdminUser")
+
 public class UserController {
 
     @Autowired
     private UserServices userServices ;
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private UserRepository userRepository;
+    @ModelAttribute
+    public void addUserToModel(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            Object principal = authentication.getPrincipal();
+            if (principal instanceof UserDetails) {
+                UserDetails userDetails = (UserDetails) principal;
+                String username = userDetails.getUsername();
+                User user = userRepository.findByUsername(username);
+                model.addAttribute("user", user);
+            }
+        }
+    }
 
     // Home page
     @GetMapping("/home")
@@ -47,64 +68,49 @@ public class UserController {
             @RequestParam("userId") int userId,
             @RequestParam("enabled") boolean enabled,
             @RequestParam("role") String role,
-            @RequestParam("newpassword") String newpassword,
-            @RequestParam("confirmpassword") String confirmpassword,
+            @RequestParam(value = "newpassword", required = false) String newpassword,
+            @RequestParam(value = "confirmpassword", required = false) String confirmpassword,
+            RedirectAttributes redirectAttributes
+    ) {
+        System.out.println("Received userId: " + userId);
+        System.out.println("Received enabled: " + enabled);
+        System.out.println("Received role: " + role);
+        System.out.println("Received newpassword: " + newpassword);
+        System.out.println("Received confirmpassword: " + confirmpassword);
 
-            RedirectAttributes redirectAttributes) {
-
-        // Find user by ID using getUserById
         User user = userServices.getUserById(userId);
         if (user == null) {
             redirectAttributes.addFlashAttribute("error", "User not found.");
-            return "redirect:/users/list";
+            return "redirect:/AdminUser/list";
         }
 
-        // Validate if the role string is valid
         if (role == null || role.isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Role is required.");
-            return "redirect:/users/list";
+            return "redirect:/AdminUser/list";
         }
 
-        // Update the user's role, assuming the role passed is a valid string that matches a Role enum
         try {
             Role userRole = Role.valueOf(role);
             user.setRole(userRole);
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("error", "Invalid role.");
-            return "redirect:/users/list";
+            return "redirect:/AdminUser/list";
         }
 
-        // Validate password (if not empty)
-        boolean passwordUpdated = false;
-        if (!newpassword.isEmpty()) {
+        if (newpassword != null && !newpassword.isEmpty()) {
             if (!newpassword.equals(confirmpassword)) {
-                redirectAttributes.addFlashAttribute("error", "New password and confirm password do not match.");
-                return "redirect:/users/list";
+                redirectAttributes.addFlashAttribute("error", "Passwords do not match.");
+                return "redirect:/AdminUser/list";
             }
-            user.setPassword(passwordEncoder.encode(newpassword));  // Assuming you hash the password
-            passwordUpdated = true;  // Flag to indicate password was updated
+            user.setPassword(passwordEncoder.encode(newpassword));
         }
 
-        // Update the enabled status
         user.setEnabled(enabled);
-
-        // Save the updated user
         userServices.save(user);
 
-        // Prepare the success message
-        String successMessage = passwordUpdated
-                ? "New password '" + newpassword + "' updated successfully."
-                : "Updated successfully.";
-
-
-        redirectAttributes.addFlashAttribute("success", successMessage);
-
-
-        return "redirect:/users/list";
+        redirectAttributes.addFlashAttribute("success", "User updated successfully.");
+        return "redirect:/AdminUser/list";
     }
-
-
-
 
 
 
