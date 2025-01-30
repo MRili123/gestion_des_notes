@@ -1,13 +1,10 @@
 package com.example.GestionNote.controller;
 
 import com.example.GestionNote.DTO.CustomUserDetails;
+import com.example.GestionNote.DTO.LevelDTO;
 import com.example.GestionNote.DTO.ProfessorDTO;
-import com.example.GestionNote.model.Filiere;
-import com.example.GestionNote.model.Professor;
-import com.example.GestionNote.model.User;
-import com.example.GestionNote.repository.FiliereRepository;
-import com.example.GestionNote.repository.ProfessorRepository;
-import com.example.GestionNote.repository.UserRepository;
+import com.example.GestionNote.model.*;
+import com.example.GestionNote.repository.*;
 import com.example.GestionNote.service.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -32,6 +29,10 @@ public class SpController {
     private ProfessorRepository professorRepository;
     @Autowired
     private FiliereRepository filiereRepository;
+    @Autowired
+    private LevelRepository levelRepository;
+    @Autowired
+    private LevelPathRepository levelPathRepository;
 
     // Make the user object accessible to all controller routes
     @ModelAttribute
@@ -150,9 +151,93 @@ public class SpController {
         return  "redirect:/AdminSp/filieres";
     }
 
-    @RequestMapping("/classes")
-    public String classes() {
-        return "AdminSp/classes";
+    @RequestMapping("/levels")
+    public String classes(Model model) {
+        List<Filiere> filieres = filiereRepository.findByDeleted(false);
+        List<Level> levels = levelRepository.findByDeleted(false);
+        model.addAttribute("filieres", filieres);
+        model.addAttribute("levels", levels);
+        return "AdminSp/levels";
+    }
+
+    @RequestMapping("/levels/delete/{id}")
+    public String deleteLevel(@PathVariable int id) {
+        Level level = levelRepository.findById(id).orElse(null);
+        if (level != null) {
+            level.setDeleted(true);
+            levelRepository.save(level);
+        }
+        return "redirect:/AdminSp/levels";
+    }
+
+    @RequestMapping("/levels/add")
+    public String addLevel(@RequestBody LevelDTO newLevel) {
+        Filiere filiere = filiereRepository.findById(newLevel.getFiliereId()).orElse(null);
+        if (filiere != null) {
+            Level level = new Level();
+            level.setFiliere(filiere);
+            level.setTitle(newLevel.getTitle());
+            level.setAlias(newLevel.getAlias());
+            level.setCreatedAt(LocalDateTime.now());
+            levelRepository.save(level);
+
+            // If the level has no next levels, add a LevelPath with nextLevel set to null
+            if (newLevel.getNextLevels().contains(-1) || newLevel.getNextLevels().isEmpty()) {
+                LevelPath levelPath = new LevelPath();
+                levelPath.setLevel(level);
+                levelPath.setNextLevel(null);
+                levelPath.setCreatedAt(LocalDateTime.now());
+                levelPathRepository.save(levelPath);
+            }
+            // Otherwise, add all next levels to the level
+            else {
+                for (int nextLevelId : newLevel.getNextLevels()) {
+                    LevelPath levelPath = new LevelPath();
+                    levelPath.setLevel(level);
+                    levelPath.setNextLevel(levelRepository.findById(nextLevelId).orElse(null));
+                    levelPath.setCreatedAt(LocalDateTime.now());
+                    levelPathRepository.save(levelPath);
+                }
+            }
+        }
+        return "redirect:/AdminSp/levels";
+    }
+
+    @RequestMapping("/levels/edit/{id}")
+    public String editLevel(@PathVariable int id, @RequestBody LevelDTO updatedLevel) {
+        Level level = levelRepository.findById(id).orElse(null);
+        Filiere filiere = filiereRepository.findById(updatedLevel.getFiliereId()).orElse(null);
+        if (level != null) {
+            level.setTitle(updatedLevel.getTitle());
+            level.setAlias(updatedLevel.getAlias());
+            level.setUpdatedAt(LocalDateTime.now());
+            level.setFiliere(filiere);
+            levelRepository.save(level);
+
+            // Delete all current level paths
+            List<LevelPath> currentLevelPaths = levelPathRepository.findByLevel(level);
+            levelPathRepository.deleteAll(currentLevelPaths);
+
+            // If the level has no next levels, add a LevelPath with nextLevel set to null
+            if (updatedLevel.getNextLevels().contains(-1) || updatedLevel.getNextLevels().isEmpty()) {
+                LevelPath levelPath = new LevelPath();
+                levelPath.setLevel(level);
+                levelPath.setNextLevel(null);
+                levelPath.setCreatedAt(LocalDateTime.now());
+                levelPathRepository.save(levelPath);
+            }
+            // Otherwise, add all next levels to the level
+            else {
+                for (int nextLevelId : updatedLevel.getNextLevels()) {
+                    LevelPath levelPath = new LevelPath();
+                    levelPath.setLevel(level);
+                    levelPath.setNextLevel(levelRepository.findById(nextLevelId).orElse(null));
+                    levelPath.setCreatedAt(LocalDateTime.now());
+                    levelPathRepository.save(levelPath);
+                }
+            }
+        }
+        return "redirect:/AdminSp/levels";
     }
 
     @RequestMapping("/modules")
