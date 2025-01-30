@@ -2,8 +2,10 @@ package com.example.GestionNote.controller;
 
 import com.example.GestionNote.DTO.CustomUserDetails;
 import com.example.GestionNote.DTO.LevelDTO;
+import com.example.GestionNote.DTO.ModuleDTO;
 import com.example.GestionNote.DTO.ProfessorDTO;
 import com.example.GestionNote.model.*;
+import com.example.GestionNote.model.Module;
 import com.example.GestionNote.repository.*;
 import com.example.GestionNote.service.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,8 @@ public class SpController {
     private LevelRepository levelRepository;
     @Autowired
     private LevelPathRepository levelPathRepository;
+    @Autowired
+    private ModuleRepository moduleRepository;
 
     // Make the user object accessible to all controller routes
     @ModelAttribute
@@ -241,15 +245,62 @@ public class SpController {
     }
 
     @RequestMapping("/modules")
-    public String modules() {
+    public String modules(Model model) {
+        List<Level> levels = levelRepository.findByDeleted(false);
+        List<Professor> professors = professorRepository.findByDeleted(false);
+        List<Module> modules = moduleRepository.findAllByDeleted(false);
+        model.addAttribute("levels", levels);
+        model.addAttribute("professors", professors);
+        model.addAttribute("modules", modules);
         return "AdminSp/modules";
+    }
+
+    @RequestMapping("/modules/delete/{id}")
+    public String deleteModule(@PathVariable int id) {
+        Module module = moduleRepository.findById(id).orElse(null);
+        if (module != null) {
+            module.setDeleted(true);
+            moduleRepository.save(module);
+        }
+        return "redirect:/AdminSp/modules";
+    }
+
+    @RequestMapping("/modules/add")
+    public String addModule(@RequestBody ModuleDTO newModule) {
+        Module module = new Module();
+        Level level = levelRepository.findById(newModule.getLevelId()).orElse(null);
+        Professor professor = professorRepository.findById(newModule.getTeacherId()).orElse(null);
+        if (level != null && professor != null) {
+            module.setLevel(level);
+            module.setProfessor(professor);
+            module.setTitle(newModule.getTitle());
+            module.setCode(newModule.getCode());
+            module.setCreatedAt(LocalDateTime.now());
+            moduleRepository.save(module);
+        }
+        return "redirect:/AdminSp/modules";
+    }
+
+    @RequestMapping("/modules/edit/{id}")
+    public String editModule(@PathVariable int id, @RequestBody ModuleDTO updatedModule) {
+        Module moduleToUpdate = moduleRepository.findById(id).orElse(null);
+        Level level = levelRepository.findById(updatedModule.getLevelId()).orElse(null);
+        Professor professor = professorRepository.findById(updatedModule.getTeacherId()).orElse(null);
+        if (moduleToUpdate != null && level != null && professor != null) {
+            moduleToUpdate.setLevel(level);
+            moduleToUpdate.setProfessor(professor);
+            moduleToUpdate.setTitle(updatedModule.getTitle());
+            moduleToUpdate.setCode(updatedModule.getCode());
+            moduleToUpdate.setUpdatedAt(LocalDateTime.now());
+            moduleRepository.save(moduleToUpdate);
+        }
+
+        return "redirect:/AdminSp/modules";
     }
 
     @RequestMapping("/elements")
     public String elements() {
         return "AdminSp/elements";
     }
-
-
 
 }

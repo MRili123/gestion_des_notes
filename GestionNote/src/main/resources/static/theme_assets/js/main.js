@@ -820,7 +820,7 @@
     allowClear: true,
   });
 
-  $("#select-search,#select-search-add,#select-search-edit, #select-nextL-add, #select-nextL-edit, .kb__select").select2({
+  $("#select-search,#select-search-add,#select-search-edit, #select-nextL-add, #select-nextL-edit, #select-teacher-edit, #select-teacher-add .kb__select").select2({
     placeholder: "Select...",
     dropdownCssClass: "category-member",
     allowClear: true,
