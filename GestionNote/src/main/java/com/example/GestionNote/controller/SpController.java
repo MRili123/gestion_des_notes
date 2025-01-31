@@ -1,9 +1,6 @@
 package com.example.GestionNote.controller;
 
-import com.example.GestionNote.DTO.CustomUserDetails;
-import com.example.GestionNote.DTO.LevelDTO;
-import com.example.GestionNote.DTO.ModuleDTO;
-import com.example.GestionNote.DTO.ProfessorDTO;
+import com.example.GestionNote.DTO.*;
 import com.example.GestionNote.model.*;
 import com.example.GestionNote.model.Module;
 import com.example.GestionNote.repository.*;
@@ -31,13 +28,6 @@ public class SpController {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private ProfessorRepository professorRepository;
-
-    @Autowired
-    private LevelRepository levelRepository;
-    @Autowired
-    private ModuleRepository moduleRepository;
-    @Autowired
     private ProfessorServices professorServices;
     @Autowired
     private FiliereServices filiereServices;
@@ -45,6 +35,8 @@ public class SpController {
     private LevelServices levelServices;
     @Autowired
     private ModuleServices moduleServices;
+    @Autowired
+    private ElementServices elementServices;
 
     // Make the user object accessible to all controller routes
     @ModelAttribute
@@ -189,8 +181,35 @@ public class SpController {
     }
 
     @RequestMapping("/elements")
-    public String elements() {
+    public String elements(Model model) {
+        List<Element> elements = elementServices.findAllByDeleted(false);
+        List<Module> modules = moduleServices.getAllModules();
+        model.addAttribute("elements", elements);
+        model.addAttribute("modules", modules);
         return "AdminSp/elements";
     }
+
+    @RequestMapping("/elements/delete/{id}")
+    public ResponseEntity<String> deleteElement(@PathVariable int id) {
+        Boolean result = elementServices.deleteElement(id);
+        if(result) return ResponseEntity.ok("Element deleted successfully");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while deleting the element");
+    }
+
+    @RequestMapping("/elements/add")
+    public ResponseEntity<String> addElement(@RequestBody ElementDTO newElement) {
+        Boolean result = elementServices.createElement(newElement);
+        if (result) return ResponseEntity.ok("Element added successfully");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while adding the element");
+    }
+
+    @RequestMapping("/elements/edit/{id}")
+    public ResponseEntity<String> editElement(@PathVariable int id, @RequestBody ElementDTO updatedElement) {
+        Boolean result = elementServices.updateElement(id, updatedElement);
+        if (result) return ResponseEntity.ok("Element updated successfully");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while updating the element");
+    }
+
+
 
 }

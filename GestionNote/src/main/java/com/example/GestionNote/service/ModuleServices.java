@@ -24,6 +24,10 @@ public class ModuleServices {
         return moduleRepository.findAllByDeleted(false);
     }
 
+    public Module getModuleById(int id){
+        return moduleRepository.findById(id).orElse(null);
+    }
+
     public Boolean deleteModule(int id){
         Module module = moduleRepository.findById(id).orElse(null);
         if (module != null) {
