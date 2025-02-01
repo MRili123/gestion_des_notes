@@ -18,6 +18,10 @@ public class ProfessorServices {
         return professorRepository.findByDeleted(false);
     }
 
+    public Professor getProfessorByCin(String cin) {
+        return professorRepository.findByCin(cin);
+    }
+
     public Professor getProfessorById(int id) {
         return professorRepository.findById(id).orElse(null);
     }
@@ -56,6 +60,10 @@ public class ProfessorServices {
         professor.setCreatedAt(LocalDateTime.now());
         professorRepository.save(professor);
         return true;
+    }
+
+    public Professor createProfessor(Professor professor) {
+        return professorRepository.save(professor);
     }
 
 }

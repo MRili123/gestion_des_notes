@@ -28,6 +28,10 @@ public class ModuleServices {
         return moduleRepository.findById(id).orElse(null);
     }
 
+    public Module getModuleByCode(String code){
+        return moduleRepository.findByCode(code);
+    }
+
     public Boolean deleteModule(int id){
         Module module = moduleRepository.findById(id).orElse(null);
         if (module != null) {

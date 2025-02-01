@@ -31,6 +31,10 @@ public class ElementServices {
         return true;
     }
 
+    public Element createElement(Element element) {
+        return elementRepository.save(element);
+    }
+
     public Boolean createElement(ElementDTO newElement) {
         try{
             Element element = new Element();
