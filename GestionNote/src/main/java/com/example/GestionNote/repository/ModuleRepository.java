@@ -10,4 +10,6 @@ import java.util.List;
 public interface ModuleRepository extends JpaRepository<Module, Integer> {
     @Query("SELECT m FROM Module m JOIN m.level JOIN m.professor WHERE m.deleted = false")
     List<Module> findAllByDeleted(Boolean deleted);
+
+    Module findByCode(String code);
 }

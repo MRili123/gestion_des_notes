@@ -5,19 +5,19 @@ import com.example.GestionNote.model.*;
 import com.example.GestionNote.model.Module;
 import com.example.GestionNote.repository.*;
 import com.example.GestionNote.service.*;
-import com.github.javafaker.Bool;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -117,6 +117,34 @@ public class SpController {
         if (result) return ResponseEntity.ok("Filiere updated successfully");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while updating the filiere");
     }
+
+    @RequestMapping("/filieres/template/download")
+    public ResponseEntity<byte[]> downloadTemplate() {
+        byte[] template = filiereServices.getTemplateFileXLSX();
+
+        // Set the headers and return the response
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDispositionFormData("attachment", "new_structure_filiere.xlsx");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(template);
+    }
+
+    @RequestMapping("/filieres/structure/upload")
+    public ResponseEntity<String> uploadStructure(@RequestParam("file") MultipartFile file) {
+        try {
+            byte[] fileBytes = file.getBytes(); // Convert MultipartFile to byte[]
+            String result = filiereServices.createFiliereFromXLSX(fileBytes);
+            return ResponseEntity.ok(result);
+        } catch (IncorrectResultSizeDataAccessException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Data already exists in the database, if you want to update it, please use the update function");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
 
     @RequestMapping("/levels")
     public String classes(Model model) {

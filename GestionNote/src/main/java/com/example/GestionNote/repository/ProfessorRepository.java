@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface ProfessorRepository extends JpaRepository<Professor, Integer> {
     List<Professor> findByDeleted(Boolean deleted);
+    Professor findByCin(String cin);
 }
