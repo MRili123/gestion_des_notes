@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/AdminSp")
@@ -43,11 +44,14 @@ public class SpController {
             if (principal instanceof UserDetails) {
                 UserDetails userDetails = (UserDetails) principal;
                 String username = userDetails.getUsername();
-                User user = userRepository.findByUsername(username);
-                model.addAttribute("user", user);
+
+                // Handle Optional<User> properly
+                Optional<User> userOptional = userRepository.findByUsername(username);
+                userOptional.ifPresent(user -> model.addAttribute("user", user));
             }
         }
     }
+
 
     @RequestMapping("/home")
     public String home() {

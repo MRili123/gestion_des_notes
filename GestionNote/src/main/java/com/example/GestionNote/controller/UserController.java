@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -39,11 +40,14 @@ public class UserController {
             if (principal instanceof UserDetails) {
                 UserDetails userDetails = (UserDetails) principal;
                 String username = userDetails.getUsername();
-                User user = userRepository.findByUsername(username);
-                model.addAttribute("user", user);
+
+                // Handle Optional<User> properly
+                Optional<User> userOptional = userRepository.findByUsername(username);
+                userOptional.ifPresent(user -> model.addAttribute("user", user));
             }
         }
     }
+
 
     // Home page
     @GetMapping("/home")

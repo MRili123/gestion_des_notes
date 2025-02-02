@@ -24,9 +24,14 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userRepository.findAllByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
+        // Return a custom UserDetails implementation that includes the "enabled" status
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
+                user.getEnabled(), // Pass the "enabled" status here
+                true, // accountNonExpired
+                true, // credentialsNonExpired
+                true, // accountNonLocked
                 Collections.singletonList(new SimpleGrantedAuthority(user.getRole()))
         );
     }
