@@ -5,12 +5,21 @@
         layout:decorate="~{AdminUser/layout.html}">
 >
 <head>
-    <title layout:fragment="title">Professors - Admin SP</title>
+    <title layout:fragment="title">Users - Admin User</title>
 </head>
 <body>
-<span layout:fragment="title">Professors</span>
+
+<span layout:fragment="title">Users</span>
 
 <div layout:fragment="actual_content" >
+    <div th:if="${error}" class="alert alert-danger">
+        <p th:text="${error}"></p>
+    </div>
+
+    <!-- Display success message if any -->
+    <div th:if="${success}" class="alert alert-success">
+        <p th:text="${success}"></p>
+    </div>
     <div class="row">
         <div class="col-lg-12 mb-30">
             <div class="card mt-30">
@@ -18,15 +27,20 @@
 
                     <div class="userDatatable adv-table-table global-shadow border-0 bg-white w-100 adv-table">
                         <div class="table-responsive">
-                            <div class="adv-table-table__header">
-                                <h4>Professors</h4>
-                                <div class="adv-table-table__button">
+                            <div class="adv-table-table__header" style="width: 140%; ">
+                                <h4>Users</h4>
+                                <div class="adv-table-table__button d-flex ">
 
-
+                                        <button class="btn btn-success btn-default btn-squared mr-3" data-toggle="modal" data-target="#add-modal">
+                                            Add user
+                                        </button>
+                                    <button class="btn btn-success btn-default btn-squared" data-toggle="modal" >
+                                     add professor
+                                    </button>
 
                                 </div>
                             </div>
-                            <div id="filter-form-container"></div>
+                            <div id="filter-form-container" style="width: 140%; "></div>
                             <table class="table mb-0 table-borderless adv-table" data-sorting="true" data-filter-container="#filter-form-container" data-paging-current="1" data-paging-position="right" data-paging-size="10">
                                 <thead>
                                 <tr class="userDatatable-header">
@@ -40,6 +54,7 @@
                                     <th>
                                         <span class="userDatatable-title">Last Name</span>
                                     </th>
+
                                     <th>
                                         <span class="userDatatable-title">user Name</span>
                                     </th>
@@ -236,6 +251,123 @@
         </div>
     </div>
     <!-- MODAL EDIT CONFIRM -->
+
+
+    <!-- MODAL ADD CONFIRM -->
+    <div class="modal-basic modal fade show" id="add-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content modal-bg-white ">
+                <div class="modal-header">
+                    <h6 class="modal-title">Add a new User</h6>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span data-feather="x"></span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="horizontal-form">
+
+                        <form th:action="@{/AdminUser/add}" method="post">
+                            <div class="form-group row mb-25">
+                                <div class="col-sm-3 d-flex align-items-center">
+                                    <label for="inputFirstNameAdd" class="col-form-label color-dark fs-14 fw-500 align-center">
+                                        First Name
+                                    </label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="inputFirstNameAdd" name="inputFirstNameAdd"> <!-- Added name -->
+                                </div>
+                            </div>
+
+                            <div class="form-group row mb-25">
+                                <div class="col-sm-3 d-flex align-items-center">
+                                    <label for="inputLastNameAdd" class="col-form-label color-dark fs-14 fw-500 align-center">
+                                        Last Name
+                                    </label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="inputLastNameAdd" name="inputLastNameAdd"> <!-- Added name -->
+                                </div>
+                            </div>
+
+                            <div class="form-group row mb-25">
+                                <div class="col-sm-3 d-flex align-items-center">
+                                    <label for="inputUserNameAdd" class="col-form-label color-dark fs-14 fw-500 align-center">
+                                        User Name
+                                    </label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="inputUserNameAdd" name="inputUserNameAdd"> <!-- Added name -->
+                                </div>
+                            </div>
+
+                            <div class="form-group row mb-25">
+                                <div class="col-sm-3 d-flex align-items-center">
+                                    <label for="inputEmailAdd" class="col-form-label color-dark fs-14 fw-500 align-center">
+                                        Email
+                                    </label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="email" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="inputEmailAdd" name="inputEmailAdd" placeholder="username@email.com"> <!-- Added name -->
+                                </div>
+                            </div>
+
+                            <div class="form-group row mb-25">
+                                <div class="col-sm-3 d-flex align-items-center">
+                                    <label for="inputCINAdd" class="col-form-label color-dark fs-14 fw-500 align-center">
+                                        CIN
+                                    </label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="inputCINAdd" name="inputCINAdd" placeholder="G######"> <!-- Added name -->
+                                </div>
+                            </div>
+
+                            <div class="form-group row mb-25">
+                                <div class="col-sm-3 d-flex align-items-center">
+                                    <label for="inputRole" class="col-form-label color-dark fs-14 fw-500 align-center">Role</label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <select id="inputRoleAdd" name="inputRoleAdd" class="form-control ih-medium ip-gray radius-xs b-light px-15"> <!-- Fixed name -->
+                                        <option value="ADMIN_SP">ADMIN_SP</option>
+                                        <option value="ADMIN_NOTES">ADMIN_NOTES</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group row mb-25">
+                                <div class="col-sm-3 d-flex align-items-center">
+                                    <label for="inputPhoneAdd" class="col-form-label color-dark fs-14 fw-500 align-center">
+                                        Phone
+                                    </label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="number" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="inputPhoneAdd" name="inputPhoneAdd" placeholder="06 ## ## ## ##"> <!-- Added name -->
+                                </div>
+                            </div>
+
+                            <div class="form-group row mb-25">
+                                <div class="col-sm-3 d-flex align-items-center">
+                                    <label for="inputPasswordAdd" class="col-form-label color-dark fs-14 fw-500 align-center">
+                                        Password
+                                    </label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="inputPasswordAdd" name="inputPasswordAdd"> <!-- Added name -->
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="submit" id="save-add" class="btn btn-primary btn-sm">Save changes</button>
+                                <button type="button" class="btn btn-light btn-sm" data-dismiss="modal">Cancel</button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- MODAL ADD CONFIRM -->
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
