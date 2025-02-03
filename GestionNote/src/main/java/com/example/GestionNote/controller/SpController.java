@@ -19,6 +19,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -130,6 +131,26 @@ public class SpController {
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(template);
+    }
+
+    @RequestMapping("/filieres/structure/download/{id}")
+    public ResponseEntity<byte[]> downloadStructure(@PathVariable int id) {
+        try {
+            byte[] structure = filiereServices.getStructureFileXLSX(id);
+            String filiereName = filiereServices.getFiliereById(id).getTitle();
+            // Set the headers and return the response
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentDispositionFormData("attachment", filiereName + ".xlsx");
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(structure);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .contentType(MediaType.TEXT_PLAIN)
+                    .body(e.getMessage().getBytes(StandardCharsets.UTF_8));
+        }
     }
 
     @RequestMapping("/filieres/structure/upload")

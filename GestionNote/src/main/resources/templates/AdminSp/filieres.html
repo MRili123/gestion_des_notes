@@ -94,6 +94,11 @@
                                     <td>
                                         <ul class="orderDatatable_actions mb-0 d-flex flex-wrap">
                                             <li>
+                                                <a href="#" class="view" id="download-structure" th:attr="data-id=${filiere.id}">
+                                                    <span data-feather="download"></span>
+                                                </a>
+                                            </li>
+                                            <li>
                                                 <a href="#" class="edit" data-toggle="modal" data-target="#edit-modal"
                                                    th:attr="data-id=${filiere.id}, data-alias=${filiere.alias}, data-title=${filiere.title},
                                                         data-accreditationstart=${filiere.accreditationStart},
@@ -545,6 +550,22 @@
                     alert(error.responseText);
                 }
             });
+        });
+    </script>
+    <!-- Script to handle the structure download -->
+    <script>
+        $(document).on("click", "#download-structure", function () {
+            const filiereId = $(this).data("id");
+            window.location.href = '/AdminSp/filieres/structure/download/' + filiereId;
+            // $.ajax({
+            //     url: '/AdminSp/filieres/structure/download/' + filiereId, // URL for the structure download request
+            //     type: "GET",
+            //     contentType: false,
+            //     processData: false,
+            //     error: function (error) {
+            //         alert(error.responseText);
+            //     }
+            // });
         });
     </script>
 

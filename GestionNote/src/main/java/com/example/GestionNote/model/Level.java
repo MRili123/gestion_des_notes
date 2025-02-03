@@ -114,4 +114,12 @@ public class Level {
     public void setNextLevelPaths(Set<LevelPath> nextLevelPaths) {
         this.nextLevelPaths = nextLevelPaths;
     }
+
+    public Set<Module> getModules() {
+        return modules;
+    }
+
+    public void setModules(Set<Module> modules) {
+        this.modules = modules;
+    }
 }
