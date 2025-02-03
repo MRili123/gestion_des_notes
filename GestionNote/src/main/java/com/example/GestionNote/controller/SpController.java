@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 @RequestMapping("/AdminSp")
@@ -156,7 +157,14 @@ public class SpController {
     @RequestMapping("/filieres/structure/upload")
     public ResponseEntity<String> uploadStructure(@RequestParam("file") MultipartFile file) {
         try {
-            byte[] fileBytes = file.getBytes(); // Convert MultipartFile to byte[]
+            // Ensure the file is XLSX
+            if (!Objects.equals(file.getContentType(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid file type, please upload an XLSX file");
+            }
+
+            // Convert MultipartFile to byte[]
+            byte[] fileBytes = file.getBytes();
+
             String result = filiereServices.createFiliereFromXLSX(fileBytes);
             return ResponseEntity.ok(result);
         } catch (IncorrectResultSizeDataAccessException e){
