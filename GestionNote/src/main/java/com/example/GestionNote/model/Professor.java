@@ -26,6 +26,20 @@ public class Professor {
 
     @OneToMany(mappedBy = "professor", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Module> modules;
+    public Professor() {
+        // Initialize default values if necessary
+    }
+    public Professor(String firstName, String lastName, String cin, String email, String phone) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.cin = cin;
+        this.email = email;
+        this.phone = phone;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.deleted = false;
+    }
+
 
     public Integer getId() {
         return id;

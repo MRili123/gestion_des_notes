@@ -1,8 +1,10 @@
 package com.example.GestionNote.controller;
 
 
+import com.example.GestionNote.model.Professor;
 import com.example.GestionNote.model.Role;
 import com.example.GestionNote.model.User;
+import com.example.GestionNote.repository.ProfessorRepository;
 import com.example.GestionNote.repository.UserRepository;
 import com.example.GestionNote.service.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/AdminUser")
 
 public class UserController {
+    @Autowired
+    private ProfessorRepository professorRepository;
 
     @Autowired
     private UserServices userServices ;
@@ -132,54 +136,72 @@ public class UserController {
         // Validation: Check if any of the fields are empty
         if (firstName.isEmpty() || lastName.isEmpty() || username.isEmpty() || email.isEmpty() ||
                 cni.isEmpty() || role.isEmpty() || phone.isEmpty() || password.isEmpty()) {
-
-            // Add error message to RedirectAttributes to show on the form
             redirectAttributes.addFlashAttribute("error", "All fields are required. Please fill in all fields.");
-            return "redirect:/AdminUser/list";  // Redirect back to the form
+            return "redirect:/AdminUser/list";
         }
 
         // Check if the role is valid (example: ADMIN_SP or ADMIN_NOTES)
         if (!role.equals("ADMIN_SP") && !role.equals("ADMIN_NOTES")) {
             redirectAttributes.addFlashAttribute("error", "Invalid role selected.");
-            return "redirect:/AdminUser/list";  // Redirect back to the form
+            return "redirect:/AdminUser/list";
         }
 
         // Email validation (check if the email is valid)
         if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
             redirectAttributes.addFlashAttribute("error", "Please enter a valid email address.");
-            return "redirect:/AdminUser/list";  // Redirect back to the form
+            return "redirect:/AdminUser/list";
         }
 
         // Phone validation (check if the phone number is valid)
         if (!phone.matches("^\\d{10}$")) {
             redirectAttributes.addFlashAttribute("error", "Please enter a valid phone number.");
-            return "redirect:/AdminUser/list";  // Redirect back to the form
+            return "redirect:/AdminUser/list";
         }
 
-        // Check if user already exists by username or email (for example, avoid duplicates)
-        if (userRepository.existsByUsername(username)) {
-            redirectAttributes.addFlashAttribute("error", "Username already exists.");
-            return "redirect:/AdminUser/list";  // Redirect back to the form
-        }
+        // Generate a unique username
+        String uniqueUsername = generateUniqueUsername(username);
 
+        // Check if the email already exists
         if (userRepository.existsByEmail(email)) {
             redirectAttributes.addFlashAttribute("error", "Email already exists.");
-            return "redirect:/AdminUser/list";  // Redirect back to the form
+            return "redirect:/AdminUser/list";
         }
-
+        String encodedPassword = passwordEncoder.encode(password);
         // If all fields are valid, proceed with saving the user
         try {
-            User newUser = new User(firstName, lastName, username, email, cni, role, phone, password);
+
+            User newUser = new User(firstName, lastName, uniqueUsername, email, cni, role, phone, encodedPassword);
+            newUser.setEnabled(true);
+            newUser.setLocked(false);
+            newUser.setCreatedAt(LocalDateTime.now());
             userServices.save(newUser);
 
-            // Add success message
-            redirectAttributes.addFlashAttribute("success", "User added successfully.");
-            return "redirect:/AdminUser/list";  // Redirect to user list or any other page
+            redirectAttributes.addFlashAttribute("success", "User added successfully with username: " + uniqueUsername);
+            return "redirect:/AdminUser/list";
         } catch (Exception e) {
-            // Handle any exception that may occur while saving the user
             redirectAttributes.addFlashAttribute("error", "An error occurred while saving the user. Please try again.");
-            return "redirect:/AdminUser/list";  // Redirect back to the form
+            return "redirect:/AdminUser/list";
         }
+    }
+
+    // Method to generate a unique username
+    private String generateUniqueUsername(String baseUsername) {
+        String username = baseUsername;
+        int count = 1;
+
+        while (userRepository.existsByUsername(username)) {
+            username = baseUsername + "(" + count + ")";
+            count++;
+        }
+
+        return username;
+    }
+
+    @RequestMapping("/professors")
+    public String professors(Model model) {
+        List<Professor> professors = professorRepository.findByDeleted(false);
+        model.addAttribute("professors", professors);
+        return "AdminUser/ProfsList";
     }
 
 }
