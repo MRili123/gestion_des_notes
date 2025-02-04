@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 
 <head>
 
@@ -90,14 +90,16 @@
                                                         <div class="text-light fs-16"></div>
                                                     </div>
                                                 </div>
-
                                                 <div th:if="${param.error}">
-                                                    <div class=" alert alert-danger " role="alert">
-                                                        <div class="alert-content">
-                                                            <p>Invalid username or password</p>
-                                                        </div>
+
+                                                    <div class="alert alert-danger">
+                                                        <p th:if="${param.error != null and param.error[0] == 'true'}">Invalid username or password.</p>
+                                                        <p th:if="${param.error != null and param.error[0] == 'disabled'}">Your account is disabled.</p>
+                                                        <p th:if="${param.error != null and param.error[0] == 'invalid'}">Invalid login credentials.</p>
                                                     </div>
+                                                </p>
                                                 </div>
+
 
                                                 <div class="button-group d-flex pt-1 justify-content-md-start justify-content-center">
                                                     <button type="submit" class="btn btn-primary btn-default btn-squared mr-15 text-capitalize lh-normal px-50 py-15 signIn-createBtn ">
@@ -105,8 +107,8 @@
                                                     </button>
                                                 </div>
 
+                                                </div>
 
-                                            </div>
                                             </form>
                                         </div><!-- End: .card-body -->
                                     </div><!-- End: .card -->
