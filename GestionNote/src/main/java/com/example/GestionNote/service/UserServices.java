@@ -17,6 +17,15 @@ public class UserServices {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+ // Inject your repository
+
+
+    // Method to check if a user is enabled
+    public boolean isUserEnabled(String username) {
+        return userRepository.findByUsername(username)
+                .map(user -> user.getEnabled()) // Assuming `getEnabled()` exists in your entity
+                .orElse(false); // Default to false if user not found
+    }
 
     public List <User> getAllUsers(){
         return userRepository.findAll();
