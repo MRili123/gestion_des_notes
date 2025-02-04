@@ -19,9 +19,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Objects;
 
 @Controller
 @RequestMapping("/AdminSp")
@@ -136,14 +138,59 @@ public class SpController {
                 .body(template);
     }
 
+    @RequestMapping("/filieres/structure/download/{id}")
+    public ResponseEntity<byte[]> downloadStructure(@PathVariable int id) {
+        try {
+            byte[] structure = filiereServices.getStructureFileXLSX(id);
+            String filiereName = filiereServices.getFiliereById(id).getTitle();
+            // Set the headers and return the response
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentDispositionFormData("attachment", filiereName + ".xlsx");
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(structure);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .contentType(MediaType.TEXT_PLAIN)
+                    .body(e.getMessage().getBytes(StandardCharsets.UTF_8));
+        }
+    }
+
     @RequestMapping("/filieres/structure/upload")
     public ResponseEntity<String> uploadStructure(@RequestParam("file") MultipartFile file) {
         try {
-            byte[] fileBytes = file.getBytes(); // Convert MultipartFile to byte[]
+            // Ensure the file is XLSX
+            if (!Objects.equals(file.getContentType(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid file type, please upload an XLSX file");
+            }
+
+            // Convert MultipartFile to byte[]
+            byte[] fileBytes = file.getBytes();
+
             String result = filiereServices.createFiliereFromXLSX(fileBytes);
             return ResponseEntity.ok(result);
         } catch (IncorrectResultSizeDataAccessException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Data already exists in the database, if you want to update it, please use the update function");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @RequestMapping("/filieres/structure/update")
+    public ResponseEntity<String> updateStructure(@RequestParam("file") MultipartFile file) {
+        try {
+            // Ensure the file is XLSX
+            if (!Objects.equals(file.getContentType(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid file type, please upload an XLSX file");
+            }
+
+            // Convert MultipartFile to byte[]
+            byte[] fileBytes = file.getBytes();
+
+            String result = filiereServices.updateFiliereFromXLSX(fileBytes);
+            return ResponseEntity.ok(result);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

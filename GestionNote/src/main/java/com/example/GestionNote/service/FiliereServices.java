@@ -14,18 +14,15 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class FiliereServices {
@@ -107,6 +104,108 @@ public class FiliereServices {
             return Files.readAllBytes(path);
         } catch (IOException e) {
             return null;
+        }
+    }
+
+    public byte[] getStructureFileXLSX(int filiereId){
+        try {
+            // Get the template file
+            ClassPathResource resource = new ClassPathResource("existing_filiere_structure.xlsx");
+            Path path = resource.getFile().toPath();
+            // Read the workbook
+            InputStream inputStream = new ByteArrayInputStream(Files.readAllBytes(path));
+            Workbook workbook = new XSSFWorkbook(inputStream);
+            // Get the filiere
+            Filiere filiere = filiereRepository.findById(filiereId).orElse(null);
+            if (filiere == null) throw new IllegalArgumentException("The filiere with id " + filiereId + " does not exist");
+            // Get the filiere sheet
+            Sheet filiereSheet = workbook.getSheetAt(0);
+            // Set the filiere data
+            Row filiereRow = filiereSheet.createRow(1);
+            filiereRow.createCell(0).setCellValue(filiere.getId());
+            filiereRow.createCell(1).setCellValue(filiere.getTitle());
+            filiereRow.createCell(2).setCellValue(filiere.getAlias());
+            filiereRow.createCell(3).setCellValue(filiere.getAccreditationStart().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            filiereRow.createCell(4).setCellValue(filiere.getAccreditationEnd().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            filiereRow.createCell(5).setCellValue(filiere.getCoordinator().getCin());
+            filiereRow.createCell(6).setCellValue(filiere.getCoordinator().getFirstName());
+            filiereRow.createCell(7).setCellValue(filiere.getCoordinator().getLastName());
+            filiereRow.createCell(8).setCellValue(filiere.getCoordinator().getEmail());
+            filiereRow.createCell(9).setCellValue(filiere.getCoordinator().getPhone());
+            // Get the levels sheet
+            Sheet levelsSheet = workbook.getSheetAt(1);
+            // Get the levels
+            Set<Level> levels = filiere.getLevels();
+            // Loop through the levels
+            int i = 1;
+            for (Level level : levels) {
+                // Get the level path
+                Set<LevelPath> levelPaths = level.getCurrentLevelPaths();
+
+                // Set the level data
+                for (LevelPath levelPath : levelPaths) {
+                    // Get the row (row for each level path)
+                    Row row = levelsSheet.createRow(i);
+                    row.createCell(0).setCellValue(level.getId());
+                    row.createCell(1).setCellValue(level.getTitle());
+                    row.createCell(2).setCellValue(level.getAlias());
+                    if (levelPath.getNextLevel() != null) {
+                        row.createCell(3).setCellValue(levelPath.getNextLevel().getId());
+                        row.createCell(4).setCellValue(levelPath.getNextLevel().getAlias());
+                    } else {
+                        row.createCell(3).setCellValue("N/A");
+                        row.createCell(4).setCellValue("N/A");
+                    }
+                    i++;
+                }
+            }
+            // Get the modules sheet
+            Sheet modulesSheet = workbook.getSheetAt(2);
+            // Get the modules
+            i = 1;
+            for (Level level : levels) {
+                Set<Module> modules = level.getModules();
+                for (Module module : modules) {
+                    Row row = modulesSheet.createRow(i);
+                    row.createCell(0).setCellValue(module.getId());
+                    row.createCell(1).setCellValue(module.getTitle());
+                    row.createCell(2).setCellValue(module.getCode());
+                    row.createCell(3).setCellValue(level.getId());
+                    row.createCell(4).setCellValue(level.getAlias());
+                    row.createCell(5).setCellValue(module.getProfessor().getCin());
+                    row.createCell(6).setCellValue(module.getProfessor().getFirstName());
+                    row.createCell(7).setCellValue(module.getProfessor().getLastName());
+                    row.createCell(8).setCellValue(module.getProfessor().getEmail());
+                    row.createCell(9).setCellValue(module.getProfessor().getPhone());
+                    i++;
+                }
+            }
+            // Get the elements sheet
+            Sheet elementsSheet = workbook.getSheetAt(3);
+            // Get the elements
+            i = 1;
+            for (Level level : levels) {
+                Set<Module> modules = level.getModules();
+                for (Module module : modules) {
+                    Set<Element> elements = module.getElements();
+                    for (Element element : elements) {
+                        Row row = elementsSheet.createRow(i);
+                        row.createCell(0).setCellValue(element.getId());
+                        row.createCell(1).setCellValue(element.getTitle());
+                        row.createCell(2).setCellValue(module.getId());
+                        row.createCell(3).setCellValue(module.getCode());
+                        i++;
+                    }
+                }
+            }
+            // Write the workbook to a byte array
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            workbook.write(outputStream);
+            workbook.close();
+            return outputStream.toByteArray();
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -287,6 +386,12 @@ public class FiliereServices {
             }
 
         return "Filiere created successfully";
+    }
+
+    @Transactional
+    public String updateFiliereFromXLSX(byte[] file) throws IOException {
+
+        return "Filiere updated successfully";
     }
 
 }

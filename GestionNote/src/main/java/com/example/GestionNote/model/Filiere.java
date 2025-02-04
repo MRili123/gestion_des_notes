@@ -28,6 +28,20 @@ public class Filiere {
     @JoinColumn(name = "coordinator_id")
     private Professor coordinator;
 
+    // Constructors
+    public Filiere() {
+        // Initialize default values if necessary
+    }
+
+    public Filiere(String title, String alias, LocalDate accreditationStart, LocalDate accreditationEnd, Professor coordinator) {
+        this.title = title;
+        this.alias = alias;
+        this.accreditationStart = accreditationStart;
+        this.accreditationEnd = accreditationEnd;
+        this.createdAt = LocalDateTime.now();
+        this.coordinator = coordinator;
+    }
+
     public Integer getId() {
         return id;
     }

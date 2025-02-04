@@ -53,6 +53,9 @@ public class User {
         this.role = Role.valueOf(role);
         this.phone = phone;
         this.password = password;
+        this.createdAt = LocalDateTime.now();
+        this.enabled = true;
+        this.locked = false;
     }
 
     @Override

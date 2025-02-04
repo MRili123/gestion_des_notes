@@ -36,7 +36,6 @@ public class Professor {
         this.email = email;
         this.phone = phone;
         this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
         this.deleted = false;
     }
 
