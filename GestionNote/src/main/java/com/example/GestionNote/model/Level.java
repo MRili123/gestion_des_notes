@@ -34,6 +34,18 @@ public class Level {
     @OneToMany(mappedBy = "level", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Module> modules;
 
+    // Constructors
+    public Level() {
+        // Initialize default values if necessary
+    }
+
+    public Level(String title, String alias, Filiere filiere) {
+        this.title = title;
+        this.alias = alias;
+        this.filiere = filiere;
+        this.createdAt = LocalDateTime.now();
+    }
+
 
     public Integer getId() {
         return id;

@@ -20,6 +20,17 @@ public class LevelPath {
     @JoinColumn(name = "next_level_id")
     private Level nextLevel;
 
+    // Constructors
+    public LevelPath() {
+        // Initialize default values if necessary
+    }
+
+    public LevelPath(Level level, Level nextLevel) {
+        this.level = level;
+        this.nextLevel = nextLevel;
+        this.createdAt = LocalDateTime.now();
+    }
+
 
     public Integer getId() {
         return id;
