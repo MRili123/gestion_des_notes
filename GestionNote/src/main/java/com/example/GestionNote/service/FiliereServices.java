@@ -388,6 +388,12 @@ public class FiliereServices {
         return "Filiere created successfully";
     }
 
+    @Transactional
+    public String updateFiliereFromXLSX(byte[] file) throws IOException {
+
+        return "Filiere updated successfully";
+    }
+
 }
 
 
