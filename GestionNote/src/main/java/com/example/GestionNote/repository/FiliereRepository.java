@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface FiliereRepository extends JpaRepository<Filiere, Integer> {
     List<Filiere> findByDeleted(Boolean deleted);
+    Filiere findByAlias(String alias);
 }
