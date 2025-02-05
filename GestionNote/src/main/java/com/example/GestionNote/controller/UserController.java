@@ -76,6 +76,7 @@ public class UserController {
     public String saveChanges(
             @RequestParam("userId") int userId,
             @RequestParam("enabled") boolean enabled,
+            @RequestParam("locked") boolean locked,
             @RequestParam("role") String role,
             @RequestParam(value = "newpassword", required = false) String newpassword,
             @RequestParam(value = "confirmpassword", required = false) String confirmpassword,
@@ -111,6 +112,7 @@ public class UserController {
         }
 
         user.setEnabled(enabled);
+        user.setLocked(locked);
         userServices.save(user);
 
         redirectAttributes.addFlashAttribute("success", "User updated successfully.");

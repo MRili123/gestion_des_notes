@@ -25,7 +25,8 @@ public class AuthHandler implements AuthenticationSuccessHandler {
             org.springframework.security.core.userdetails.User userDetails =
                     (org.springframework.security.core.userdetails.User) principal;
 
-            if (userDetails.isEnabled()) {
+            // Check if the account is locked
+            if (userDetails.isAccountNonLocked()) {
                 if (roles.contains("ADMIN_USER")) {
                     response.sendRedirect("/AdminUser/home");
                 } else if (roles.contains("ADMIN_NOTES")) {
@@ -36,15 +37,14 @@ public class AuthHandler implements AuthenticationSuccessHandler {
                     response.sendRedirect("/auth/login");
                 }
             } else {
-                // Use forward and handle ServletException
-                request.setAttribute("error", "disabled");
+                // Account is locked
+                request.setAttribute("error", "locked");
                 request.getRequestDispatcher("/auth/login").forward(request, response);
             }
         } else {
-            // Use forward and handle ServletException
+            // Handle invalid user case
             request.setAttribute("error", "invalid");
             request.getRequestDispatcher("/auth/login").forward(request, response);
         }
     }
 }
-
