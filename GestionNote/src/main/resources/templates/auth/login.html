@@ -94,7 +94,7 @@
 
                                                     <div class="alert alert-danger">
                                                         <p th:if="${param.error != null and param.error[0] == 'true'}">Invalid username or password.</p>
-                                                        <p th:if="${param.error != null and param.error[0] == 'disabled'}">Your account is disabled.</p>
+                                                        <p th:if="${param.error != null and param.error[0] == 'locked'}">Your account is locked.</p>
                                                         <p th:if="${param.error != null and param.error[0] == 'invalid'}">Invalid login credentials.</p>
                                                     </div>
                                                 </p>
