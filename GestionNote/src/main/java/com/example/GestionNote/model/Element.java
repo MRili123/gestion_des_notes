@@ -12,6 +12,8 @@ public class Element {
     private Integer id;
     private String title;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private Boolean deleted = false;
 
     // Relationships
     @ManyToOne(fetch = FetchType.LAZY)
@@ -49,5 +51,21 @@ public class Element {
 
     public void setModule(Module module) {
         this.module = module;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 }

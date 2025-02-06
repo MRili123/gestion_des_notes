@@ -18,6 +18,7 @@ public class Professor {
     private String phone;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Boolean deleted = false;
 
     // Relationships
     @OneToMany(mappedBy = "coordinator", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -25,6 +26,19 @@ public class Professor {
 
     @OneToMany(mappedBy = "professor", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Module> modules;
+    public Professor() {
+        // Initialize default values if necessary
+    }
+    public Professor(String firstName, String lastName, String cin, String email, String phone) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.cin = cin;
+        this.email = email;
+        this.phone = phone;
+        this.createdAt = LocalDateTime.now();
+        this.deleted = false;
+    }
+
 
     public Integer getId() {
         return id;
@@ -104,5 +118,13 @@ public class Professor {
 
     public void setModules(Set<Module> modules) {
         this.modules = modules;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 }

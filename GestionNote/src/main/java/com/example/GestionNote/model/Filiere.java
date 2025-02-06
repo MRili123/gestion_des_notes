@@ -17,6 +17,8 @@ public class Filiere {
     private LocalDate accreditationStart; // Date de debut d'accreditation
     private LocalDate accreditationEnd;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private Boolean deleted = false;
 
     // Relationships
     @OneToMany(mappedBy = "filiere", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -25,6 +27,20 @@ public class Filiere {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coordinator_id")
     private Professor coordinator;
+
+    // Constructors
+    public Filiere() {
+        // Initialize default values if necessary
+    }
+
+    public Filiere(String title, String alias, LocalDate accreditationStart, LocalDate accreditationEnd, Professor coordinator) {
+        this.title = title;
+        this.alias = alias;
+        this.accreditationStart = accreditationStart;
+        this.accreditationEnd = accreditationEnd;
+        this.createdAt = LocalDateTime.now();
+        this.coordinator = coordinator;
+    }
 
     public Integer getId() {
         return id;
@@ -88,5 +104,21 @@ public class Filiere {
 
     public void setCoordinator(Professor coordinator) {
         this.coordinator = coordinator;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

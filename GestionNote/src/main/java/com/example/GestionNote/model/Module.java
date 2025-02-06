@@ -1,6 +1,7 @@
 package com.example.GestionNote.model;
 
 import jakarta.persistence.*;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -14,6 +15,8 @@ public class Module {
     private String title;
     private String code; // m3rftch kifach dyr had lcode
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private Boolean deleted = false;
 
     // Relationships
     @ManyToOne(fetch = FetchType.LAZY)
@@ -94,5 +97,21 @@ public class Module {
 
     public void setElements(Set<Element> elements) {
         this.elements = elements;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 }

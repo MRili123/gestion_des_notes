@@ -17,6 +17,15 @@ public class UserServices {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+ // Inject your repository
+
+
+    // Method to check if a user is enabled
+    public boolean isUserEnabled(String username) {
+        return userRepository.findByUsername(username)
+                .map(user -> user.getEnabled()) // Assuming `getEnabled()` exists in your entity
+                .orElse(false); // Default to false if user not found
+    }
 
     public List <User> getAllUsers(){
         return userRepository.findAll();
@@ -28,8 +37,14 @@ public class UserServices {
         user.setEnabled(enabled);  // Update the enabled status
         userRepository.save(user); // Save the updated user back to the DB
     }
+    public boolean checkPassword(User user, String oldPassword) {
 
+        return user.getPassword().equals(oldPassword);
+    }
 
+    public void save(User user) {
+        userRepository.save(user);
+    }
     public User getUserById( int id) {
         return userRepository.findById(id).orElse(null) ;
     }

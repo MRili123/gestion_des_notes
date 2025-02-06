@@ -40,6 +40,32 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<LoginLog> loginLogs;
+    public User() {
+        // Initialize default values if necessary
+    }
+
+    public User(String firstName, String lastName, String username, String email, String cin, String role, String phone, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.username = username;
+        this.email = email;
+        this.cin = cin;
+        this.role = Role.valueOf(role);
+        this.phone = phone;
+        this.password = password;
+        this.createdAt = LocalDateTime.now();
+        this.enabled = true;
+        this.locked = false;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", username='" + username + '\'' +
+                '}';
+    }
 
     // Getters and setters
     public Integer getId() {

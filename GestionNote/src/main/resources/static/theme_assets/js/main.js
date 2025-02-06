@@ -764,27 +764,29 @@
   }
 
   /* Upload Avatar */
-  function avatarUpload() {
-    let readURL = function (input) {
+    function avatarUpload(input) {
       if (input.files && input.files[0]) {
         let reader = new FileReader();
         reader.onload = function (e) {
-          $(".avatrSrc").attr("src", e.target.result);
+          // Update only the image inside the correct modal
+          $(input).closest(".atbd-upload").find(".avatrSrc").attr("src", e.target.result);
         };
-
         reader.readAsDataURL(input.files[0]);
       }
-    };
-    $(".upload-avatar-input").on("change", function () {
-      readURL(this);
-    });
-  }
+    }
 
-  $(".atbd-upload-avatar").on("click", function (e) {
-    e.preventDefault();
-    avatarUpload();
-    $(".upload-avatar-input").click();
-  });
+    // Ensure each file input processes only its own file
+    $(".upload-avatar-input").on("change", function () {
+      avatarUpload(this); // Pass only the clicked file input
+    });
+
+    // Ensure clicking inside a modal opens only that modal’s file input
+    $(".atbd-upload-avatar").on("click", function (e) {
+      e.preventDefault(); // Prevent default behavior (e.g., following an `<a>` tag)
+      let fileInput = $(this).closest(".atbd-upload").find(".upload-avatar-input");
+      fileInput.click(); // Click only the file input inside this modal
+    });
+
 
   /* Collapsable Menu */
   function mobileMenu(dropDownTrigger, dropDown) {
@@ -820,11 +822,11 @@
     allowClear: true,
   });
 
-  $("#select-search,.kb__select").select2({
-    placeholder: "Search a person",
+  $("#select-search,#select-search-add,#select-search-edit, #select-nextL-add, #select-nextL-edit, #select-teacher-edit, #select-teacher-add .kb__select").select2({
+    placeholder: "Select...",
     dropdownCssClass: "category-member",
     allowClear: true,
-  });
+  }).val("").trigger("change");
   $("#select-alerts2").select2({
     placeholder: "Alerts",
     dropdownCssClass: "alert2",

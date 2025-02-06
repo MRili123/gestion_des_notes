@@ -1,69 +1,489 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{AdminUser/layout.html}">
+>
 <head>
-    <meta charset="UTF-8">
-    <title>Users List</title>
+    <title layout:fragment="title">Users - Admin User</title>
 </head>
 <body>
-<h1>User Management</h1>
-<table border="1">
-    <thead>
-    <tr>
-        <th>Enabled</th>
-        <th>First Name</th>
-        <th>Last Name</th>
-        <th>CIN</th>
-        <th>Phone</th>
-        <th>Email</th>
-        <th>Username</th>
-        <th>Role</th>
-        <th>Created At</th>
-        <th>Last Login</th>
-        <th>Actions</th>
-        <th>Save Changes</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="user : ${users}">
-        <td>
-            <form th:action="@{/users/saveChanges}" method="post" onsubmit="setCheckboxValue(this)">
-                <input type="hidden" th:value="${user.id}" name="userId"/>
-                <input type="hidden" name="enabled" id="enabledHidden" value="false"/> <!-- Default value for 'enabled' -->
-                <input type="checkbox" name="enabled" id="enabledCheckbox" value="true" th:checked="${user.enabled}"/> <!-- Checkbox for 'enabled' -->
-        </td>
-        <td th:text="${user.firstName}">First Name</td>
-        <td th:text="${user.lastName}">Last Name</td>
-        <td th:text="${user.cin}">CIN</td>
-        <td th:text="${user.phone}">Phone</td>
-        <td th:text="${user.email}">Email</td>
-        <td th:text="${user.username}">Username</td>
-        <td th:text="${user.role}">Role</td>
-        <td th:text="${user.createdAt}">Created At</td>
-        <td th:text="${user.lastLogin}">Last Login</td>
-        <td>
-            <a href="#">Change Password</a>
-        </td>
-        <td>
-            <button type="submit">Save Changes</button>
-            </form>
-        </td>
-    </tr>
-    </tbody>
-</table>
 
-<script>
-    function setCheckboxValue(form) {
-        var checkbox = form.querySelector("#enabledCheckbox");
-        var hiddenInput = form.querySelector("#enabledHidden");
+<span layout:fragment="title">Users</span>
 
-        // Set the hidden input value based on the checkbox's checked state
-        if (checkbox.checked) {
-            hiddenInput.value = "true"; // Set to 'true' if checked
-        } else {
-            hiddenInput.value = "false"; // Set to 'false' if unchecked
-        }
-    }
-</script>
+<div layout:fragment="actual_content" >
+    <div th:if="${error}" class="alert alert-danger">
+        <p th:text="${error}"></p>
+    </div>
+
+    <!-- Display success message if any -->
+    <div th:if="${success}" class="alert alert-success">
+        <p th:text="${success}"></p>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 mb-30">
+            <div class="card mt-30">
+                <div class="card-body">
+
+                    <div class="userDatatable adv-table-table global-shadow border-0 bg-white w-100 adv-table">
+                        <div class="table-responsive">
+                            <div class="adv-table-table__header" style="width: 140%; ">
+                                <h4>Users</h4>
+                                <div class="adv-table-table__button d-flex ">
+
+                                        <button class="btn btn-success btn-default btn-squared mr-3" data-toggle="modal" data-target="#add-modal">
+                                            Add user
+                                        </button>
+                                    <a th:href="@{/AdminUser/professors}" class="btn btn-success btn-default btn-squared p-4 " >
+                                    Add professor
+                                    </a>
+
+                                </div>
+                            </div>
+                            <div id="filter-form-container" style="width: 140%; "></div>
+                            <table class="table mb-0 table-borderless adv-table" data-sorting="true" data-filter-container="#filter-form-container" data-paging-current="1" data-paging-position="right" data-paging-size="10">
+                                <thead>
+                                <tr class="userDatatable-header">
+
+                                    <th>
+                                        <span class="userDatatable-title">id</span>
+                                    </th>
+                                    <th>
+                                        <span class="userDatatable-title">First Name</span>
+                                    </th>
+                                    <th>
+                                        <span class="userDatatable-title">Last Name</span>
+                                    </th>
+
+                                    <th>
+                                        <span class="userDatatable-title">user Name</span>
+                                    </th>
+                                    <th>
+                                        <span class="userDatatable-title">CIN</span>
+                                    </th>
+                                    <th>
+                                        <span class="userDatatable-title">role</span>
+                                    </th>
+                                    <th>
+                                        <span class="userDatatable-title">createdAt</span>
+                                    </th>
+                                    <th>
+                                        <span class="userDatatable-title">last login</span>
+                                    </th>
+                                    <th>
+                                        <span class="userDatatable-title">phone</span>
+                                    </th>
+                                    <th data-type="html">
+                                        <span class="userDatatable-title">Email</span>
+                                    </th>
+                                    <th data-type="html">
+                                        <span class="userDatatable-title">enable</span>
+                                    </th>
+                                    <th data-type="html">
+                                        <span class="userDatatable-title">status</span>
+                                    </th>
+
+                                    <th>
+                                        <span class="userDatatable-title float-right">action</span>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="user : ${users}">
+                                    <td>
+                                        <div class="userDatatable-content" th:text="${user.id}">ID</div>
+                                    </td>
+                                    <td>
+                                        <div class="userDatatable-content" th:text="${user.firstName}">
+                                            FIRST_NAME
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="userDatatable-content" th:text="${user.lastName}">
+                                            LAST_NAME
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="userDatatable-content" th:text="${user.username}">
+                                            username
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="userDatatable-content" th:text="${user.cin}">
+                                            CIN
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="userDatatable-content" th:text="${user.role}">
+                                            role
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="userDatatable-content" th:text="${user.createdAt}">
+                                            createdAt
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="userDatatable-content" th:text="${user.lastLogin}">
+                                            last login
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="userDatatable-content" th:text="${user.phone}">
+                                            phone
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="userDatatable-content" th:text="${user.email}">
+                                            EMAIL
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="userDatatable-content d-inline-block">
+    <span th:classappend="${user.enabled} ? 'bg-opacity-success color-success' : 'bg-opacity-danger color-danger'"
+          class="rounded-pill userDatatable-content-status">
+        <span th:text="${user.enabled} ? 'Active' : 'Desactive'"></span>
+    </span>
+                                        </div>
+
+                                    </td>
+                                    <td>
+                                        <div class="userDatatable-content d-inline-block">
+    <span th:classappend="${user.locked} ?  'bg-opacity-danger color-danger': 'bg-opacity-success color-success'"
+          class="rounded-pill userDatatable-content-status">
+        <span th:text="${user.locked} ? 'blocked': 'unblocked' "></span>
+    </span>
+                                        </div>
+
+                                    </td>
+                                    <td>
+                                        <ul class="orderDatatable_actions mb-0 d-flex flex-wrap">
+                                            <li>
+                                                <a href="#" class="edit" data-toggle="modal" data-target="#edit-modal"
+                                                   th:attr="data-id=${user.id}, data-enabled=${user.enabled},
+                                                    data-role=${user.role},data-blocked=${user.locked}">
+                                                    <span data-feather="edit"></span>
+                                                </a>
+
+                                            </li>
+
+                                        </ul>
+                                    </td>
+
+                                </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- MODAL EDIT CONFIRM -->
+    <div class="modal-basic modal fade show" id="edit-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content modal-bg-white ">
+                <div class="modal-header">
+                    <h6 class="modal-title">Edit</h6>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span data-feather="x"></span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="horizontal-form">
+                        <form  >
+                            <div class="form-group row mb-25">
+                                <div class="col-sm-3 d-flex aling-items-center">
+
+                                    <label for="inputEnable" class=" col-form-label color-dark fs-14 fw-500 align-center">
+                                        Enabled
+                                    </label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <select id="inputEnable" class="form-control ih-medium ip-gray radius-xs b-light px-15" name="enabled">
+                                        <option value="true">True</option>
+                                        <option value="false">False</option>
+                                    </select>
+
+                                </div>
+                            </div>
+                            <div class="form-group row mb-25">
+                                <div class="col-sm-3 d-flex aling-items-center">
+
+                                    <label for="inputBlocked" class=" col-form-label color-dark fs-14 fw-500 align-center">
+                                    Status
+                                    </label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <select id="inputBlocked" class="form-control ih-medium ip-gray radius-xs b-light px-15" name="locked">
+                                        <option value="true">Blocked</option>
+                                        <option value="false">Unblocked</option>
+                                    </select>
+
+                                </div>
+                            </div>
+
+
+                            <div class="form-group row mb-25">
+                                <div class="col-sm-3 d-flex aling-items-center">
+
+                                        <label for="inputRole"  class=" col-form-label color-dark fs-14 fw-500 align-center">Role</label>
+                                </div>
+
+                                    <div class="col-sm-9">
+                                        <select  id="inputRole" name="role" class="form-control ih-medium ip-gray radius-xs b-light px-15">
+                                            <option value="ADMIN_SP">ADMIN_SP</option>
+                                            <option value="ADMIN_NOTES">ADMIN_NOTES</option>
+                                        </select>
+                                    </div>
+
+                            </div>
+
+                            <div class="form-group row mb-25">
+                                <div class="col-sm-3 d-flex aling-items-center">
+
+                                    <label for="inputNewPassword" class=" col-form-label color-dark fs-14 fw-500 align-center">
+                                        new password
+                                    </label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control ih-medium ip-gray radius-xs b-light px-15" name="newpassword" id="inputNewPassword">
+                                </div>
+                            </div>
+
+                            <div class="form-group row mb-25">
+                                <div class="col-sm-3 d-flex aling-items-center">
+
+                                    <label for="inputConfirmPassword" class=" col-form-label color-dark fs-14 fw-500 align-center">
+                                       confirm password
+                                    </label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control ih-medium ip-gray radius-xs b-light px-15" name="confirmpassword" id="inputConfirmPassword">
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" id="userID" name="userId"> <!-- Used to store prof id -->
+                    <button type="button" id="save-changes" class="btn btn-primary btn-sm">Save changes</button>
+                    <button type="button" class="btn btn-light btn-sm" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- MODAL EDIT CONFIRM -->
+
+
+    <!-- MODAL ADD CONFIRM -->
+    <div class="modal-basic modal fade show" id="add-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content modal-bg-white ">
+                <div class="modal-header">
+                    <h6 class="modal-title">Add a new User</h6>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span data-feather="x"></span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="horizontal-form">
+
+                        <form th:action="@{/AdminUser/add}" method="post">
+                            <div class="form-group row mb-25">
+                                <div class="col-sm-3 d-flex align-items-center">
+                                    <label for="inputFirstNameAdd" class="col-form-label color-dark fs-14 fw-500 align-center">
+                                        First Name
+                                    </label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="inputFirstNameAdd" name="inputFirstNameAdd"> <!-- Added name -->
+                                </div>
+                            </div>
+
+                            <div class="form-group row mb-25">
+                                <div class="col-sm-3 d-flex align-items-center">
+                                    <label for="inputLastNameAdd" class="col-form-label color-dark fs-14 fw-500 align-center">
+                                        Last Name
+                                    </label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="inputLastNameAdd" name="inputLastNameAdd"> <!-- Added name -->
+                                </div>
+                            </div>
+
+                            <div class="form-group row mb-25">
+                                <div class="col-sm-3 d-flex align-items-center">
+                                    <label for="inputUserNameAdd" class="col-form-label color-dark fs-14 fw-500 align-center">
+                                        User Name
+                                    </label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="inputUserNameAdd" name="inputUserNameAdd"> <!-- Added name -->
+                                </div>
+                            </div>
+
+                            <div class="form-group row mb-25">
+                                <div class="col-sm-3 d-flex align-items-center">
+                                    <label for="inputEmailAdd" class="col-form-label color-dark fs-14 fw-500 align-center">
+                                        Email
+                                    </label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="email" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="inputEmailAdd" name="inputEmailAdd" placeholder="username@email.com"> <!-- Added name -->
+                                </div>
+                            </div>
+
+                            <div class="form-group row mb-25">
+                                <div class="col-sm-3 d-flex align-items-center">
+                                    <label for="inputCINAdd" class="col-form-label color-dark fs-14 fw-500 align-center">
+                                        CIN
+                                    </label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="inputCINAdd" name="inputCINAdd" placeholder="G######"> <!-- Added name -->
+                                </div>
+                            </div>
+
+                            <div class="form-group row mb-25">
+                                <div class="col-sm-3 d-flex align-items-center">
+                                    <label for="inputRole" class="col-form-label color-dark fs-14 fw-500 align-center">Role</label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <select id="inputRoleAdd" name="inputRoleAdd" class="form-control ih-medium ip-gray radius-xs b-light px-15"> <!-- Fixed name -->
+                                        <option value="ADMIN_SP">ADMIN_SP</option>
+                                        <option value="ADMIN_NOTES">ADMIN_NOTES</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group row mb-25">
+                                <div class="col-sm-3 d-flex align-items-center">
+                                    <label for="inputPhoneAdd" class="col-form-label color-dark fs-14 fw-500 align-center">
+                                        Phone
+                                    </label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="number" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="inputPhoneAdd" name="inputPhoneAdd" placeholder="06 ## ## ## ##"> <!-- Added name -->
+                                </div>
+                            </div>
+
+                            <div class="form-group row mb-25">
+                                <div class="col-sm-3 d-flex align-items-center">
+                                    <label for="inputPasswordAdd" class="col-form-label color-dark fs-14 fw-500 align-center">
+                                        Password
+                                    </label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="inputPasswordAdd" name="inputPasswordAdd"> <!-- Added name -->
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="submit" id="save-add" class="btn btn-primary btn-sm">Save changes</button>
+                                <button type="button" class="btn btn-light btn-sm" data-dismiss="modal">Cancel</button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- MODAL ADD CONFIRM -->
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Function to handle the "edit" button click
+            $(document).on("click", ".edit", function () {
+                // Retrieve data attributes from the clicked edit button
+                const userId = $(this).data("id");
+                const enabled = $(this).data("enabled");
+                const role = $(this).data("role");
+                const blocked = $(this).data("blocked");
+
+
+                // Populate the modal form fields
+                $("#inputEnable").val(String(enabled)); // Set enabled value (true/false as string)
+                $("#inputRole").val(role);              // Set role value
+                $("#userID").val(userId);               // Set user ID
+                $("#inputBlocked").val(String(blocked));
+            });
+
+            // Function to handle the "save changes" button click
+            $(document).on("click", "#save-changes", function () {
+                // Retrieve form values
+                const userId = $("#userID").val();
+                const enabled = $("#inputEnable").val() === "true"; // Convert string to boolean
+                const locked = $("#inputBlocked").val() === "true"; // Convert string to boolean
+                const role = $("#inputRole").val();
+                const newpassword = $("#inputNewPassword").val();
+                const confirmpassword = $("#inputConfirmPassword").val();
+
+                // Validate form fields
+                if (!role) {
+                    alert("Role is required.");
+                    return;
+                }
+
+                if (newpassword && newpassword !== confirmpassword) {
+                    alert("New password and confirm password do not match.");
+                    return;
+                }
+
+                // Prepare the data to send to the server
+                const dataToSend = {
+                    userId: userId,
+                    enabled: enabled,
+                    locked:  locked,
+                    role: role,
+                };
+
+                // Include passwords only if provided
+                if (newpassword) {
+                    dataToSend.newpassword = newpassword;
+                }
+                if (confirmpassword) {
+                    dataToSend.confirmpassword = confirmpassword;
+                }
+
+                // Debugging: Log the data being sent
+                console.log("Data to send:", dataToSend);
+
+                // CSRF token handling (if CSRF protection is enabled)
+                const csrfToken = $("meta[name='_csrf']").attr("content");
+                const csrfHeader = $("meta[name='_csrf_header']").attr("content");
+
+                // Send the AJAX request
+                $.ajax({
+                    url: "/AdminUser/saveChanges", // Endpoint defined in the controller
+                    type: "POST",
+                    headers: { [csrfHeader]: csrfToken }, // Include CSRF token
+                    data: dataToSend, // Data to send
+                    success: function (response) {
+                        alert("User updated successfully!");
+                        location.reload(); // Reload the page to reflect changes
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error:", xhr, status, error); // Log error for debugging
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            alert("Error: " + xhr.responseJSON.message); // Show error message from server
+                        } else {
+                            alert("An error occurred while updating the user.");
+                        }
+                    },
+                });
+            });
+        });
+    </script>
+
+</div>
 
 </body>
 </html>
