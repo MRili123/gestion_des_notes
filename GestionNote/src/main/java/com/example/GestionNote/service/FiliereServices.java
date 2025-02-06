@@ -17,12 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class FiliereServices {
@@ -153,8 +151,11 @@ public class FiliereServices {
                         row.createCell(3).setCellValue(levelPath.getNextLevel().getId());
                         row.createCell(4).setCellValue(levelPath.getNextLevel().getAlias());
                     } else {
-                        row.createCell(3).setCellValue("N/A");
-                        row.createCell(4).setCellValue("N/A");
+                        CellStyle style = workbook.createCellStyle();
+                        style.setFillBackgroundColor(IndexedColors.GREY_40_PERCENT.getIndex());
+                        style.setFillPattern(FillPatternType.THICK_FORWARD_DIAG);
+                        row.createCell(3).setCellStyle(style);
+                        row.createCell(4).setCellStyle(style);
                     }
                     i++;
                 }
@@ -221,7 +222,7 @@ public class FiliereServices {
             // Check if the first 5 columns are filled
             for (int i = 0; i < 5; i++) {
                 if(filiereSheet.getRow(1).getCell(i).getCellType() == CellType.BLANK)
-                    throw new IllegalArgumentException("You must fill all the columns in the filiere sheet");
+                    throw new IllegalArgumentException("You must fill all the necessary columns in the filiere sheet");
             }
 
             // Set the filiere data
@@ -286,12 +287,12 @@ public class FiliereServices {
             int nextLevelId = 0; // The last level id
             int maxLevelOrder = 0;
             for (int i = 0; i < rows.size(); i++) {
-                Row row = rows.get(i);
-                if (row.getCell(0).getStringCellValue().isEmpty())
+                Row currentRow = rows.get(i);
+                if (currentRow.getCell(0).getStringCellValue().isEmpty())
                     throw new IllegalArgumentException("You must fill all the columns in the levels sheet");
                 Level level = new Level();
-                level.setTitle(row.getCell(0).getStringCellValue());
-                level.setAlias(row.getCell(1).getStringCellValue());
+                level.setTitle(currentRow.getCell(0).getStringCellValue());
+                level.setAlias(currentRow.getCell(1).getStringCellValue());
                 level.setCreatedAt(LocalDateTime.now());
                 level.setFiliere(savedFiliere);
                 levelServices.createLevel(level);
@@ -302,10 +303,11 @@ public class FiliereServices {
                 levelPath.setCreatedAt(LocalDateTime.now());
 
                 // If the level has no next levels, add a LevelPath with nextLevel set to null
-                if(i == 0 && (int) rows.get(i).getCell(2).getNumericCellValue() != maxLevelOrder) {
+                // i == 0 meaning we are at the first element in the list which is the last level because we sorted the list desc
+                if(i == 0 || (int) currentRow.getCell(2).getNumericCellValue() == maxLevelOrder) {
                     levelPath.setNextLevel(null);
                     nextLevelId = level.getId();
-                    maxLevelOrder = (int) rows.get(i).getCell(2).getNumericCellValue();
+                    maxLevelOrder = (int) currentRow.getCell(2).getNumericCellValue();
                 } else {
                     levelPath.setNextLevel(levelServices.getLevelById(nextLevelId));
                     nextLevelId = level.getId();
@@ -390,6 +392,306 @@ public class FiliereServices {
 
     @Transactional
     public String updateFiliereFromXLSX(byte[] file) throws IOException {
+        // Create a workbook from the file
+        InputStream inputStream = new ByteArrayInputStream(file);
+        Workbook workbook = new XSSFWorkbook(inputStream);
+
+        /*   GET THE FILIERE SHEET    */
+        Sheet filiereSheet = workbook.getSheetAt(0);
+        // Check if the first 5 columns are filled
+        for (int i = 0; i < 6; i++) {
+            if(filiereSheet.getRow(1).getCell(i).getCellType() == CellType.BLANK)
+                throw new IllegalArgumentException("You must fill all the columns in the filiere sheet");
+        }
+        // Get the filiere from db
+        Filiere filiere = filiereRepository.findById((int) filiereSheet.getRow(1).getCell(0).getNumericCellValue()).orElse(null);
+        if (filiere == null) throw new IllegalArgumentException("The filiere with id " + (int) filiereSheet.getRow(0).getCell(0).getNumericCellValue() + " does not exist");
+
+        // Set the filiere with the new data
+        filiere.setTitle(filiereSheet.getRow(1).getCell(1).getStringCellValue());
+        filiere.setAlias(filiereSheet.getRow(1).getCell(2).getStringCellValue());
+
+        LocalDate accreditationStart = filiereSheet.getRow(1).getCell(3).getCellType() == CellType.NUMERIC ?
+                filiereSheet.getRow(1).getCell(3).getLocalDateTimeCellValue().toLocalDate() :
+                LocalDate.parse(filiereSheet.getRow(1).getCell(3).getStringCellValue(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        LocalDate accreditationEnd = filiereSheet.getRow(1).getCell(4).getCellType() == CellType.NUMERIC ?
+                filiereSheet.getRow(1).getCell(4).getLocalDateTimeCellValue().toLocalDate() :
+                LocalDate.parse(filiereSheet.getRow(1).getCell(4).getStringCellValue(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+
+        filiere.setAccreditationStart(accreditationStart);
+        filiere.setAccreditationEnd(accreditationEnd);
+
+        // Set the new coordinator
+        Professor newCoordinator = professorServices.getProfessorByCin(filiereSheet.getRow(1).getCell(5).getStringCellValue());
+        if(filiere.getCoordinator() != newCoordinator) {
+            // Check if the new coordinator exists already in db
+            if(newCoordinator != null) {
+                filiere.setCoordinator(newCoordinator);
+            } else { // Otherwise create a new professor
+                Professor professor = new Professor();
+                professor.setFirstName(filiereSheet.getRow(1).getCell(6).getStringCellValue());
+                professor.setLastName(filiereSheet.getRow(1).getCell(7).getStringCellValue());
+                professor.setCin(filiereSheet.getRow(1).getCell(5).getStringCellValue());
+                professor.setEmail(filiereSheet.getRow(1).getCell(8).getStringCellValue());
+                professor.setPhone(filiereSheet.getRow(1).getCell(9).getStringCellValue());
+                professor.setCreatedAt(LocalDateTime.now());
+                professorServices.createProfessor(professor);
+                filiere.setCoordinator(professor);
+            }
+        }
+        filiere.setUpdatedAt(LocalDateTime.now());
+        filiereRepository.save(filiere);
+
+        /* Get the levels sheet */
+        Sheet levelsSheet = workbook.getSheetAt(1);
+
+        // Read all rows into a list exclude blank rows
+        ArrayList<Row> levelsRows = new ArrayList<>();
+        for (int i = 1; i <= levelsSheet.getPhysicalNumberOfRows(); i++) {
+            Row row = levelsSheet.getRow(i);
+            // Only consider rows that has their title and alias columns filled
+            if (row != null) {
+                int nonBlankCount = 0;
+                for (int j = 1; j < 3; j++) {
+                    Cell cell = row.getCell(j);
+                    if (cell != null && cell.getCellType() != CellType.BLANK) {
+                        nonBlankCount++;
+                    }
+                }
+                if (nonBlankCount == 2) {
+                    levelsRows.add(row);
+                }
+            }
+        }
+
+        // Create a hashmap to store created/updated levels aliases and their IDs
+        Map<String, Integer> trackedLevels = new HashMap<>();
+
+        levelsRows.forEach(levelRow -> {
+            // Check if the ID column is filled
+            if (levelRow.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).getCellType() == CellType.BLANK) {
+                // Create a new level
+                Level newLevel = new Level();
+                newLevel.setTitle(levelRow.getCell(1).getStringCellValue());
+                newLevel.setAlias(levelRow.getCell(2).getStringCellValue());
+                newLevel.setCreatedAt(LocalDateTime.now());
+                newLevel.setFiliere(filiere);
+
+                // Save in db
+                levelServices.createLevel(newLevel);
+
+                trackedLevels.put(newLevel.getAlias(), newLevel.getId());
+
+            } else {
+                // Get the level from db
+                Level level = levelServices.getLevelById((int) levelRow.getCell(0).getNumericCellValue());
+                // Update normal data
+                level.setTitle(levelRow.getCell(1).getStringCellValue());
+                level.setAlias(levelRow.getCell(2).getStringCellValue());
+                level.setFiliere(filiere);
+
+                // delete all the levelPaths where they have the current level as this one (we will recreate them based on the new data)
+                List<LevelPath> levelPaths = levelPathRepository.getAllByLevel(level);
+                levelPathRepository.deleteAll(levelPaths);
+
+                level.setUpdatedAt(LocalDateTime.now());
+                Level updatedLevel = levelServices.updateLevel(level);
+                trackedLevels.put(updatedLevel.getAlias(), updatedLevel.getId());
+            }
+        });
+
+        // Resolve level paths using the trackedLevels hashmap
+        levelsRows.forEach(levelRow -> {
+            Cell nextLevelIdCell = levelRow.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            Cell nextLevelAliasCell = levelRow.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            Cell levelAliasCell = levelRow.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+
+            boolean bothCellsBlank = nextLevelIdCell.getCellType() == CellType.BLANK && nextLevelAliasCell.getCellType() == CellType.BLANK;
+
+            // CASE WHERE NEXT LEVEL ID AND ALIAS CELLS ARE BLANK => NEXT LEVEL IS NULL AKA THE CURRENT LEVEL IS THE LAST ONE
+            if (bothCellsBlank) {
+                // Get the ID from the tracked hashmap using the alias
+                int levelId = trackedLevels.get(levelAliasCell.getStringCellValue());
+                Level currentLevel = levelServices.getLevelById(levelId);
+
+                // Now create the levelPath relationship
+                LevelPath levelPath = new LevelPath();
+                levelPath.setLevel(currentLevel);
+                levelPath.setNextLevel(null);
+                levelPath.setCreatedAt(LocalDateTime.now());
+                levelPathRepository.save(levelPath);
+            }
+
+            // CASE WHERE THE NEXT LEVEL ID CELL IS NOT NUMERIC OR THE NEXT LEVEL ALIAS CELL IS NOT STRING => INVALID DATA
+            if(!bothCellsBlank && nextLevelIdCell.getCellType() != CellType.NUMERIC && nextLevelAliasCell.getCellType() != CellType.STRING)
+                throw new IllegalArgumentException("Invalid data in the levels sheet, you must provide either the next level id or the next level alias in a valid format");
+
+            // CASE WHERE THE NEXT LEVEL ID IS PRESENT => GET IT FROM DB
+            if(nextLevelIdCell.getCellType() == CellType.NUMERIC){
+                // Get the ID from the tracked hashmap using the alias
+                int levelId = trackedLevels.get(levelAliasCell.getStringCellValue());
+                Level currentLevel = levelServices.getLevelById(levelId);
+                // Get the next level
+                int nextLevelId = (int) nextLevelIdCell.getNumericCellValue();
+                Level nextLevel = levelServices.getLevelById(nextLevelId);
+
+                // Now create the levelPath relationship
+                LevelPath levelPath = new LevelPath();
+                levelPath.setLevel(currentLevel);
+                levelPath.setNextLevel(nextLevel);
+                levelPath.setCreatedAt(LocalDateTime.now());
+                levelPathRepository.save(levelPath);
+            }
+
+            // CASE WHERE THE NEXT LEVEL ID IS NOT PRESENT => GET IT FROM THE ALIAS
+            if(nextLevelIdCell.getCellType() == CellType.BLANK && nextLevelAliasCell.getCellType() == CellType.STRING){
+                // Get the ID from the tracked hashmap using the alias
+                int levelId = trackedLevels.get(levelAliasCell.getStringCellValue());
+                Level currentLevel = levelServices.getLevelById(levelId);
+                // Get the next level
+                String nextLevelAlias = nextLevelAliasCell.getStringCellValue();
+                Level nextLevel = levelServices.getLevelByAlias(nextLevelAlias);
+
+                // Now create the levelPath relationship
+                LevelPath levelPath = new LevelPath();
+                levelPath.setLevel(currentLevel);
+                levelPath.setNextLevel(nextLevel);
+                levelPath.setCreatedAt(LocalDateTime.now());
+                levelPathRepository.save(levelPath);
+            }
+
+        });
+
+        /* Get the modules sheet */
+        Sheet modulesSheet = workbook.getSheetAt(2);
+        for (int i = 1; i <= modulesSheet.getPhysicalNumberOfRows(); i++) {
+            Row row = modulesSheet.getRow(i);
+            // Check if rows are not null and the "title->teacher cin" columns are filled
+            if (row == null) continue;
+            for (int j = 1; j < 6; j++) {
+                if (modulesSheet.getRow(1).getCell(j).getCellType() == CellType.BLANK)
+                    throw new IllegalArgumentException("You must fill all the columns in the Module sheet");
+            }
+
+            Cell moduleIdCell = row.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            Cell moduleLevelIdCell = row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            Cell moduleLevelAliasCell = row.getCell(4, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            Cell moduleTeacherCinCell = row.getCell(5, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+
+            Module module = new Module();
+            // CASE WHERE THE MODULE ID CELL IS BLANK => CREATE A NEW MODULE
+            if(moduleIdCell.getCellType() == CellType.BLANK){
+                module.setTitle(row.getCell(1).getStringCellValue());
+                module.setCode(row.getCell(2).getStringCellValue());
+                module.setCreatedAt(LocalDateTime.now());
+            }else{
+                // CASE WHERE THE ID IS PRESENT => GET THE MODULE FROM DB
+                if(moduleLevelIdCell.getCellType() != CellType.NUMERIC)
+                    throw new IllegalArgumentException("Invalid level data in the modules sheet, module id must be numeric");
+
+                module = moduleServices.getModuleById((int) moduleIdCell.getNumericCellValue());
+                module.setTitle(row.getCell(1).getStringCellValue());
+                module.setCode(row.getCell(2).getStringCellValue());
+                module.setUpdatedAt(LocalDateTime.now());
+            }
+
+            // SET THE LEVEL
+            // IF THE LEVEL ID IS PRESENT => GET THE LEVEL FROM DB
+            if(moduleLevelIdCell.getCellType() == CellType.NUMERIC){
+                Level level = levelServices.getLevelById((int) moduleLevelIdCell.getNumericCellValue());
+                module.setLevel(level);
+            } else {
+                // IF THE LEVEL ALIAS IS PRESENT => GET THE LEVEL FROM DB
+                if(moduleLevelAliasCell.getCellType() == CellType.STRING){
+                    Level level = levelServices.getLevelByAlias(moduleLevelAliasCell.getStringCellValue());
+                    module.setLevel(level);
+                } else {
+                    throw new IllegalArgumentException("Invalid level data in the modules sheet, you must provide either the level id or the level alias");
+                }
+            }
+
+            // SET THE TEACHER
+            // IF THE TEACHER CIN IS PRESENT => GET THE TEACHER FROM DB
+            if(moduleTeacherCinCell.getCellType() == CellType.STRING){
+                Professor teacher = professorServices.getProfessorByCin(moduleTeacherCinCell.getStringCellValue());
+                if(teacher == null) {
+                    teacher = new Professor();
+                    // Check if the teacher columns are filled
+                    for (int j = 6; j < 10; j++) {
+                        if(modulesSheet.getRow(1).getCell(j).getCellType() == CellType.BLANK)
+                            throw new IllegalArgumentException("You must fill all the columns for the teacher in case the teacher is not existant");
+                    }
+                    teacher.setCin(row.getCell(5).getStringCellValue());
+                    teacher.setFirstName(row.getCell(6).getStringCellValue());
+                    teacher.setLastName(row.getCell(7).getStringCellValue());
+                    teacher.setEmail(row.getCell(8).getStringCellValue());
+                    teacher.setPhone(row.getCell(9).getStringCellValue());
+                    teacher.setCreatedAt(LocalDateTime.now());
+                    professorServices.createProfessor(teacher);
+                }
+                module.setProfessor(teacher);
+            } else {
+                throw new IllegalArgumentException("Invalid teacher data in the modules sheet, you must provide the teacher cin");
+            }
+
+            // Save the module
+            moduleServices.updateModule(module);
+        }
+
+        /* Get the elements sheet */
+        Sheet elementsSheet = workbook.getSheetAt(3);
+
+        for (int i = 1; i <= elementsSheet.getPhysicalNumberOfRows(); i++) {
+            Row row = elementsSheet.getRow(i);
+            if(row == null) continue;
+
+            Cell elementIdCell = row.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            Cell elementTitleCell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            Cell elementModuleIdCell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            Cell elementModuleCodeCell = row.getCell(3, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+
+            // Check if all the columns are filled
+            if(elementTitleCell.getCellType() != CellType.STRING ||
+                    (elementModuleIdCell.getCellType() != CellType.NUMERIC && elementModuleCodeCell.getCellType() != CellType.STRING))
+                throw new IllegalArgumentException("Invalid data in the elements sheet, you must provide the element title and the module id or code");
+
+            // Fill the element data
+            Element element = new Element();
+
+            if(elementModuleIdCell.getCellType() == CellType.BLANK){
+               element.setTitle(elementTitleCell.getStringCellValue());
+               element.setCreatedAt(LocalDateTime.now());
+            }else{
+                if(elementModuleIdCell.getCellType() != CellType.NUMERIC)
+                    throw new IllegalArgumentException("Invalid data in the elements sheet, the module id must be numeric");
+                Element elementFromDb = elementServices.getElementById((int) elementIdCell.getNumericCellValue());
+                if(elementFromDb == null)
+                    throw new IllegalArgumentException("The element with id " + (int) elementIdCell.getNumericCellValue() + " does not exist, elements sheet");
+                element = elementFromDb;
+                element.setTitle(elementTitleCell.getStringCellValue());
+                element.setUpdatedAt(LocalDateTime.now());
+            }
+
+            // SET THE MODULE
+            if(elementModuleIdCell.getCellType() != CellType.BLANK) {
+                if (elementModuleIdCell.getCellType() != CellType.NUMERIC)
+                    throw new IllegalArgumentException("Invalid data in the elements sheet, the module id must be numeric");
+                Module module = moduleServices.getModuleById((int) elementModuleIdCell.getNumericCellValue());
+                if (module == null)
+                    throw new IllegalArgumentException("The module with id " + (int) elementModuleIdCell.getNumericCellValue() + " does not exist, elements sheet");
+                element.setModule(module);
+            }else{
+                if(elementModuleCodeCell.getCellType() != CellType.STRING)
+                    throw new IllegalArgumentException("Invalid data in the elements sheet, the module code must be a string");
+                Module module = moduleServices.getModuleByCode(elementModuleCodeCell.getStringCellValue());
+                if (module == null)
+                    throw new IllegalArgumentException("The module with code " + elementModuleCodeCell.getStringCellValue() + " does not exist, elements sheet");
+                element.setModule(module);
+            }
+
+            // Save the element
+            elementServices.updateElement(element);
+        }
 
         return "Filiere updated successfully";
     }

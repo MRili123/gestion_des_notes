@@ -21,6 +21,10 @@ public class ElementServices {
         return elementRepository.findAllByDeleted(deleted);
     }
 
+    public Element getElementById(Integer id) {
+        return elementRepository.findById(id).orElse(null);
+    }
+
     public Boolean deleteElement(Integer id) {
         Element element = elementRepository.findById(id).orElse(null);
         if (element == null) {
@@ -47,6 +51,10 @@ public class ElementServices {
         }catch (Exception e){
             return false;
         }
+    }
+
+    public Element updateElement(Element element) {
+        return elementRepository.save(element);
     }
 
     public Boolean updateElement(Integer id, ElementDTO updatedElement) {
