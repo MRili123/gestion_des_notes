@@ -9,4 +9,6 @@ import java.util.List;
 public interface LevelPathRepository extends JpaRepository<LevelPath, Integer> {
 
     List<LevelPath> findByLevel(Level level);
+
+    List<LevelPath> getAllByLevel(Level level);
 }

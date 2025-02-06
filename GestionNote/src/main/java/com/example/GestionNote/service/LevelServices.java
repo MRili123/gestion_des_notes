@@ -33,6 +33,10 @@ public class LevelServices {
         return levelRepository.findByAlias(alias);
     }
 
+    public Level updateLevel(Level level){
+        return levelRepository.save(level);
+    }
+
     public Boolean deleteLevel(int id){
         Level level = levelRepository.findById(id).orElse(null);
         if (level != null) {
