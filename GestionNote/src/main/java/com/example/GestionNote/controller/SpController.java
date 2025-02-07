@@ -11,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -72,6 +73,7 @@ public class SpController {
     }
 
     @RequestMapping("/professors/delete/{id}")
+    @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
     public ResponseEntity<String> deleteProfessor(@PathVariable int id) {
         Boolean result = professorServices.deleteProfessor(id);
         if(result) return ResponseEntity.ok("Professor deleted successfully");
@@ -80,6 +82,7 @@ public class SpController {
     }
 
     @RequestMapping("/professors/edit/{id}")
+    @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
     public ResponseEntity<String> editProfessor(@PathVariable int id, @RequestBody ProfessorDTO updatedProfessor) {
         Boolean result = professorServices.updateProfessor(id, updatedProfessor);
         if(result) return ResponseEntity.ok("Professor updated successfully");
@@ -88,6 +91,7 @@ public class SpController {
     }
 
     @RequestMapping("/professors/add")
+    @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
     public ResponseEntity<String> addProfessor(@RequestBody ProfessorDTO newProfessor) {
         Boolean result = professorServices.createProfessor(newProfessor);
         if(result) return ResponseEntity.ok("Professor added successfully");
@@ -104,6 +108,7 @@ public class SpController {
     }
 
     @RequestMapping("/filieres/delete/{id}")
+    @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
     public ResponseEntity<String> deleteFiliere(@PathVariable int id) {
         Boolean result = filiereServices.deleteFiliere(id);
         if(result) return ResponseEntity.ok("Filiere deleted successfully");
@@ -111,6 +116,7 @@ public class SpController {
     }
 
     @RequestMapping("/filieres/add")
+    @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
     public ResponseEntity<String> addFiliere(@RequestBody Filiere newFiliere) {
         Boolean result = filiereServices.createFiliere(newFiliere);
         if (result) return ResponseEntity.ok("Filiere added successfully");
@@ -118,6 +124,7 @@ public class SpController {
     }
 
     @RequestMapping("/filieres/edit/{id}")
+    @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
     public ResponseEntity<String> editFiliere(@PathVariable int id, @RequestBody Filiere updatedFiliere) {
         Boolean result = filiereServices.updateFiliere(id, updatedFiliere);
         if (result) return ResponseEntity.ok("Filiere updated successfully");
@@ -125,6 +132,7 @@ public class SpController {
     }
 
     @RequestMapping("/filieres/template/download")
+    @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
     public ResponseEntity<byte[]> downloadTemplate() {
         byte[] template = filiereServices.getTemplateFileXLSX();
 
@@ -139,6 +147,7 @@ public class SpController {
     }
 
     @RequestMapping("/filieres/structure/download/{id}")
+    @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
     public ResponseEntity<byte[]> downloadStructure(@PathVariable int id) {
         try {
             byte[] structure = filiereServices.getStructureFileXLSX(id);
@@ -159,6 +168,7 @@ public class SpController {
     }
 
     @RequestMapping("/filieres/structure/upload")
+    @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
     public ResponseEntity<String> uploadStructure(@RequestParam("file") MultipartFile file) {
         try {
             // Ensure the file is XLSX
@@ -179,6 +189,7 @@ public class SpController {
     }
 
     @RequestMapping("/filieres/structure/update")
+    @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
     public ResponseEntity<String> updateStructure(@RequestParam("file") MultipartFile file) {
         try {
             // Ensure the file is XLSX
@@ -207,6 +218,7 @@ public class SpController {
     }
 
     @RequestMapping("/levels/delete/{id}")
+    @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
     public ResponseEntity<String> deleteLevel(@PathVariable int id) {
         Boolean result = levelServices.deleteLevel(id);
         if(result) return ResponseEntity.ok("Level deleted successfully");
@@ -214,6 +226,7 @@ public class SpController {
     }
 
     @RequestMapping("/levels/add")
+    @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
     public ResponseEntity<String> addLevel(@RequestBody LevelDTO newLevel) {
         Boolean result = levelServices.createLevel(newLevel);
         if (result) return ResponseEntity.ok("Level added successfully");
@@ -221,6 +234,7 @@ public class SpController {
     }
 
     @RequestMapping("/levels/edit/{id}")
+    @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
     public ResponseEntity<String> editLevel(@PathVariable int id, @RequestBody LevelDTO updatedLevel) {
         Boolean result = levelServices.updateLevel(id, updatedLevel);
         if (result) return ResponseEntity.ok("Level updated successfully");
@@ -239,6 +253,7 @@ public class SpController {
     }
 
     @RequestMapping("/modules/delete/{id}")
+    @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
     public ResponseEntity<String> deleteModule(@PathVariable int id) {
         Boolean result = moduleServices.deleteModule(id);
         if(result) return ResponseEntity.ok("Module deleted successfully");
@@ -246,6 +261,7 @@ public class SpController {
     }
 
     @RequestMapping("/modules/add")
+    @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
     public ResponseEntity<String> addModule(@RequestBody ModuleDTO newModule) {
         Boolean result = moduleServices.createModule(newModule);
         if (result) return ResponseEntity.ok("Module added successfully");
@@ -253,6 +269,7 @@ public class SpController {
     }
 
     @RequestMapping("/modules/edit/{id}")
+    @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
     public ResponseEntity<String> editModule(@PathVariable int id, @RequestBody ModuleDTO updatedModule) {
         Boolean result = moduleServices.updateModule(id, updatedModule);
         if (result) return ResponseEntity.ok("Module updated successfully");
@@ -269,6 +286,7 @@ public class SpController {
     }
 
     @RequestMapping("/elements/delete/{id}")
+    @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
     public ResponseEntity<String> deleteElement(@PathVariable int id) {
         Boolean result = elementServices.deleteElement(id);
         if(result) return ResponseEntity.ok("Element deleted successfully");
@@ -276,6 +294,7 @@ public class SpController {
     }
 
     @RequestMapping("/elements/add")
+    @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
     public ResponseEntity<String> addElement(@RequestBody ElementDTO newElement) {
         Boolean result = elementServices.createElement(newElement);
         if (result) return ResponseEntity.ok("Element added successfully");
@@ -283,6 +302,7 @@ public class SpController {
     }
 
     @RequestMapping("/elements/edit/{id}")
+    @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
     public ResponseEntity<String> editElement(@PathVariable int id, @RequestBody ElementDTO updatedElement) {
         Boolean result = elementServices.updateElement(id, updatedElement);
         if (result) return ResponseEntity.ok("Element updated successfully");

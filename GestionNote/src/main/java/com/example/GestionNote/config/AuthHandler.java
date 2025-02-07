@@ -36,15 +36,7 @@ public class AuthHandler implements AuthenticationSuccessHandler {
                 } else {
                     response.sendRedirect("/auth/login");
                 }
-            } else {
-                // Account is locked
-                request.setAttribute("error", "locked");
-                request.getRequestDispatcher("/auth/login").forward(request, response);
-            }
-        } else {
-            // Handle invalid user case
-            request.setAttribute("error", "invalid");
-            request.getRequestDispatcher("/auth/login").forward(request, response);
+           }
         }
     }
 }
