@@ -12,13 +12,26 @@ public class LoginLog {
     private Integer id;
     private String ipAddress;
     private Boolean success;
+    private String reason;
     private LocalDateTime createdAt;
+
+    public LoginLog() {
+    }
+
+    public LoginLog(Boolean success, String reason, String ipAddress, User user) {
+        this.ipAddress = ipAddress;
+        this.success = success;
+        this.reason = reason;
+        this.user = user;
+        this.createdAt = LocalDateTime.now();
+    }
 
     // Relationships
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
+    // Getters and Setters
     public Integer getId() {
         return id;
     }
@@ -43,6 +56,14 @@ public class LoginLog {
         this.success = success;
     }
 
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -58,4 +79,5 @@ public class LoginLog {
     public void setUser(User user) {
         this.user = user;
     }
+
 }

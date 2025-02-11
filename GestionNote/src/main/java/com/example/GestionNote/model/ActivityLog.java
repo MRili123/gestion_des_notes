@@ -13,6 +13,15 @@ public class ActivityLog {
     private String action;
     private LocalDateTime createdAt;
 
+    public ActivityLog() {
+    }
+
+    public ActivityLog(String action, User user) {
+        this.action = action;
+        this.user = user;
+        this.createdAt = LocalDateTime.now();
+    }
+
     // Relationships
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
