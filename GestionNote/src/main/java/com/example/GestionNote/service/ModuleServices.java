@@ -73,4 +73,8 @@ public class ModuleServices {
         }
         return false;
     }
+
+    public Module updateModule(Module module) {
+        return moduleRepository.save(module);
+    }
 }
