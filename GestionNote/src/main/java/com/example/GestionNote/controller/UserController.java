@@ -8,6 +8,7 @@ import com.example.GestionNote.repository.ProfessorRepository;
 import com.example.GestionNote.repository.UserRepository;
 import com.example.GestionNote.service.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
