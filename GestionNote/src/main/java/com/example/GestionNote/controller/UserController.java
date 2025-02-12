@@ -125,9 +125,6 @@ public class UserController {
 
     // Handle the form submission to add a new user
     @PostMapping("/add")
-
-
-
     public String addUser(
             @RequestParam("inputFirstNameAdd") String firstName,
             @RequestParam("inputLastNameAdd") String lastName,
