@@ -8,6 +8,7 @@ import com.example.GestionNote.repository.ProfessorRepository;
 import com.example.GestionNote.repository.UserRepository;
 import com.example.GestionNote.service.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -206,7 +207,57 @@ public class UserController {
         return "AdminUser/ProfsList";
     }
 
-}
+
+    @PostMapping("/addToUser")
+    public String addToUser(
+            @RequestParam("IDprof") int IDprof,
+            @RequestParam("role") String role,
+            @RequestParam("password") String password,
+            RedirectAttributes redirectAttributes
+    ) {
+        Optional<Professor> optionalProfessor = professorRepository.findById(IDprof);
+        if (optionalProfessor.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Professor not found!");
+            return "redirect:/AdminUser/list";
+        }
+
+        Professor professor = optionalProfessor.get();
+        if (userRepository.existsByCin(professor.getCin()) || userRepository.existsByEmail(professor.getEmail())) {
+            redirectAttributes.addFlashAttribute("error", "A user with this CIN or email already exists.");
+            return "redirect:/AdminUser/list";
+        }
+
+        String baseUsername = professor.getFirstName().toLowerCase()  + professor.getLastName().toLowerCase();
+        String username = baseUsername;
+        int counter = 1;
+
+        while (userRepository.existsByUsername(username)) {
+            username = baseUsername + counter;
+            counter++;
+        }
+
+        User user = new User();
+        user.setFirstName(professor.getFirstName());
+        user.setLastName(professor.getLastName());
+        user.setCin(professor.getCin());
+        user.setEmail(professor.getEmail());
+        user.setPhone(professor.getPhone());
+        user.setUsername(username);
+        user.setRole(Role.valueOf(role.toUpperCase()));
+        user.setPassword(passwordEncoder.encode(password));
+        user.setEnabled(true);
+        user.setLocked(false);
+        user.setCreatedAt(LocalDateTime.now());
+
+        userRepository.save(user);
+
+        redirectAttributes.addFlashAttribute("success", "Professor added as a user successfully!");
+        return "redirect:/AdminUser/list";
+    }}
+
+
+
+
 
 
 

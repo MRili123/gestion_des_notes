@@ -45,7 +45,8 @@ public class UserServices {
     public void save(User user) {
         userRepository.save(user);
     }
-    public User getUserById( int id) {
+    public User getUserById( Integer id) {
+        if (id == null) return null;
         return userRepository.findById(id).orElse(null) ;
     }
     public User createUser(User userDetails) {
@@ -64,6 +65,11 @@ public class UserServices {
             return userRepository.save(user);
         }
         return null;
+    }
+
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElse(null);
     }
 
 
