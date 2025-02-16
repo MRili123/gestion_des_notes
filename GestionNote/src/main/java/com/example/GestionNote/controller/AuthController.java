@@ -4,6 +4,7 @@ import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -19,6 +20,11 @@ public class AuthController implements ErrorController {
             return "redirect:/";
         }
         return "auth/login";
+    }
+    @GetMapping("/access-denied")
+    public String accessDenied(Model model) {
+        model.addAttribute("error", "You are disabled and cannot perform this action.");
+        return "/403";
     }
 
     @GetMapping("/")
