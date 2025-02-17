@@ -1,14 +1,13 @@
 package com.example.GestionNote.controller;
 
 
-import com.example.GestionNote.model.Professor;
-import com.example.GestionNote.model.Role;
-import com.example.GestionNote.model.User;
+import com.example.GestionNote.model.*;
+import com.example.GestionNote.repository.ActivityLogRepository;
+import com.example.GestionNote.repository.LoginLogRepository;
 import com.example.GestionNote.repository.ProfessorRepository;
 import com.example.GestionNote.repository.UserRepository;
 import com.example.GestionNote.service.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -38,6 +37,11 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private LoginLogRepository loginLogRepository;
+    @Autowired
+    private ActivityLogRepository activityLogRepository;
+
     @ModelAttribute
     public void addUserToModel(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -253,7 +257,23 @@ public class UserController {
 
         redirectAttributes.addFlashAttribute("success", "Professor added as a user successfully!");
         return "redirect:/AdminUser/list";
-    }}
+    }
+    @GetMapping("/logs")
+    public String logsUser(Model model){
+        List<LoginLog> loginLogs = loginLogRepository.findAll();
+        model.addAttribute("loginLogs", loginLogs);
+        return "AdminUser/LogsUser";
+    }
+    @GetMapping("/activity")
+    public String activityUser(Model model){
+        List<ActivityLog> activityusers = activityLogRepository.findAll();
+        model.addAttribute("activityusers", activityusers);
+        return "AdminUser/ActivityUsers";
+    }
+
+}
+
+
 
 
 
