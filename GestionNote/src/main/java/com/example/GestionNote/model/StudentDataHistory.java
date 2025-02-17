@@ -21,7 +21,7 @@ public class StudentDataHistory {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "studentId")
+    @JoinColumn(name = "student_id")
     private Student student;
 
     public Integer getId() {

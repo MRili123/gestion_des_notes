@@ -485,6 +485,10 @@
                     },
                     error: function (error) {
                         // Handle error
+                        if(error.status === 405) {
+                            // redirect to /access-denied
+                            window.location.href = '/access-denied';
+                        }
                         alert(error);
                     }
                 });

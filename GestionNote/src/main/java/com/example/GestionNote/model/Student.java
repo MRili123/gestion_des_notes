@@ -15,7 +15,6 @@ public class Student {
     private String cne;
     private String firstName;
     private String lastName;
-    private Integer CurrentLevelId;
     private LocalDateTime createdAt;
 
     // Relationships
@@ -30,6 +29,10 @@ public class Student {
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Deliberation> deliberations;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "current_level_id")
+    private Level currentLevel;
 
 
     public Integer getId() {
@@ -62,14 +65,6 @@ public class Student {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public Integer getCurrentLevelId() {
-        return CurrentLevelId;
-    }
-
-    public void setCurrentLevelId(Integer currentLevelId) {
-        CurrentLevelId = currentLevelId;
     }
 
     public LocalDateTime getCreatedAt() {

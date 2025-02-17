@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{AdminNotes/layout.html}">
+>
+<head>
+    <title layout:fragment="title">Grades - Admin Notes</title>
+</head>
+
+<body>
+<span layout:fragment="title">Grades</span>
+
+<div layout:fragment="actual_content" >
+    <div class="row">
+        <div class="col-lg-12 mb-30">
+            <div class="card mt-30">
+                <div class="card-body">
+
+                    <div class="userDatatable adv-table-table global-shadow border-0 bg-white w-100 adv-table">
+                        <div class="table-responsive">
+                            <div class="adv-table-table__header">
+                                <h4>Modules Grades</h4>
+                                <div class="adv-table-table__button">
+
+                                </div>
+                            </div>
+                            <div id="filter-form-container"></div>
+                            <table class="table mb-0 table-borderless adv-table" data-sorting="true" data-filter-container="#filter-form-container" data-paging-current="1" data-paging-position="right" data-paging-size="10">
+                                <thead>
+                                <tr class="userDatatable-header">
+                                    <th>
+                                        <span class="userDatatable-title">id</span>
+                                    </th>
+                                    <th>
+                                        <span class="userDatatable-title">Title</span>
+                                    </th>
+                                    <th>
+                                        <span class="userDatatable-title">Code</span>
+                                    </th>
+                                    <th>
+                                        <span class="userDatatable-title">Classe</span>
+                                    </th>
+                                    <th>
+                                        <span class="userDatatable-title">Teacher</span>
+                                    </th>
+                                    <th>
+                                        <span class="userDatatable-title float-right">action</span>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="module : ${modules}">
+                                    <td>
+                                        <div class="userDatatable-content" th:text="${module.id}">ID</div>
+                                    </td>
+                                    <td>
+                                        <div class="userDatatable-content" th:text="${module.title}">
+                                            title
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="userDatatable-content" th:text="${module.code}">
+                                            code
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="userDatatable-content" th:text="${module.level.title}">
+                                            level title
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="userDatatable-content" th:text="${module.professor.firstName} + ' ' + ${module.professor.lastName}">
+                                            teacher name
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <ul class="orderDatatable_actions mb-0 d-flex flex-wrap">
+                                            <li>
+                                                <a href="#" class="view" id="upload-structure" data-toggle="modal" data-target="#upload-modal" th:attr="data-id=${module.id}">
+                                                    <span data-feather="upload"></span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="view" id="download-structure" data-toggle="modal" data-target="#download-modal" th:attr="data-id=${module.id}">
+                                                    <span data-feather="download"></span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </td>
+
+                                </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DOWNLOAD MODAL -->
+    <div class="modal-basic modal fade show" id="download-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content modal-bg-white ">
+                <div class="modal-header">
+                    <h6 class="modal-title">Download XLSX Files for grades</h6>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span data-feather="x"></span></button>
+                </div>
+                <div class="modal-body">
+                    <p>Please choose an academic year and download the template file, fill it with the data you want to import, and then upload it using the upload button. Do not change the structure of the file.</p>
+
+                    <div class="form-group row mb-25">
+                        <div class="col-sm-3 d-flex aling-items-center">
+                            <label for="select-search-add" class="col-form-label  color-dark fs-14 fw-500 align-center">
+                                Academic Year
+                            </label>
+                        </div>
+                        <div class="col-sm-9">
+                            <div class="atbd-select-list">
+                                <div class="atbd-select ">
+                                    <select name="select-search-kkkk" id="select-search-add" class="form-control">
+                                        <option th:each="academicYear : ${academicYears}"  th:attr="value= ${academicYear}"
+                                                th:text="${academicYear}"
+                                        >
+                                            academicYear
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="atbd-button-list d-flex flex-wrap">
+                        <form th:action="@{/AdminNotes/module/session-normale/download}"  method="GET">
+                            <a>
+                                <button type="submit" class="btn btn-outline-info btn-rounded btn-md">
+                                    <span data-feather="file"></span>
+                                    Session Normale
+                                </button>
+                                <input type="hidden" name="moduleId" class="moduleIdInput">
+                                <input type="hidden" name="academicYear" class="academicYearInput">
+                            </a>
+                        </form>
+                        <form th:action="@{/AdminNotes/module/session-rattrapage/download}"  method="GET">
+                            <a>
+                                <button class="btn btn-outline-info btn-rounded btn-md">
+                                    <span data-feather="file"></span>
+                                    Session Rattrapage
+                                </button>
+                            </a>
+                            <input type="hidden" name="moduleId" class="moduleIdInput">
+                            <input type="hidden" name="academicYear" class="academicYearInput">
+                        </form>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light btn-sm" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- DOWNLOAD MODAL -->
+
+    <!-- UPLOAD MODAL -->
+    <div class="modal-basic modal fade show" id="upload-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content modal-bg-white ">
+                <div class="modal-header">
+                    <h6 class="modal-title">Upload grades data using XLSX File</h6>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span data-feather="x"></span></button>
+                </div>
+                <div class="modal-body">
+                    <p>Please download the template file, fill it with the data you want to import, and then upload it here. Do not change the structure of the file.</p>
+
+                    <div class="form-group row mb-25">
+                        <div class="col-sm-3 d-flex aling-items-center">
+                            <label for="select-search-edit" class="col-form-label  color-dark fs-14 fw-500 align-center">
+                                Academic Year
+                            </label>
+                        </div>
+                        <div class="col-sm-9">
+                            <div class="atbd-select-list">
+                                <div class="atbd-select ">
+                                    <select name="select-search-kkkk" id="select-search-edit" class="form-control">
+                                        <option th:each="academicYear : ${academicYears}"  th:attr="value= ${academicYear}"
+                                                th:text="${academicYear}"
+                                        >
+                                            academicYear
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="radio-vertical-list">
+                        <div class="mb-3 color-dark fs-14 fw-500">Please choose which session:</div>
+                        <div class="radio-theme-default custom-radio ">
+                            <input class="radio" type="radio" name="radio-vertical" value="NORMALE" id="radio-vl7">
+                            <label for="radio-vl7">
+                                <span class="radio-text">Session Normale</span>
+                            </label>
+                        </div>
+
+                        <div class="radio-theme-default custom-radio ">
+                            <input class="radio" type="radio" name="radio-vertical" value="RATTRAPAGE" id="radio-vl8">
+                            <label for="radio-vl8">
+                                <span class="radio-text">Session Rattrapage</span>
+                            </label>
+                        </div>
+
+                    </div>
+                    <div class="atbd-upload">
+                        <div class="atbd-upload-avatar media-import">
+                            <span data-feather="upload"></span>
+                            <p class="color-dark fs-20">Drop File or <a href="#">Browse</a></p>
+                        </div>
+                        <div class="avatar-up">
+                            <input type="file" class="upload-avatar-input" id="upload-area-add">
+                        </div>
+                        <div id="file-name-display-add" class="color-danger fs-16">No file selected</div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="submit-module-grades" class="btn btn-primary btn-sm">Submit</button>
+                    <button type="button" class="btn btn-light btn-sm" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- UPLOAD MODAL -->
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- SET PARAMS TO THE HIDDEN INPUTS -->
+    <script>
+        $(document).on('click', '#download-structure, #upload-structure', function () {
+            const moduleId = $(this).data("id");
+            $(".moduleIdInput").val(moduleId);
+        });
+        $(document).ready(function() {
+            $(document).on('change', '#select-search-add, #select-search-edit', function () {
+                const academicYear = $(this).val();
+                $(".academicYearInput").val(academicYear);
+            });
+        });
+    </script>
+
+</div>
+
+</body>
+
+</html>
