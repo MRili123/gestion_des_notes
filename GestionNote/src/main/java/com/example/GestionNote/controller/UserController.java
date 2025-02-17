@@ -61,7 +61,15 @@ public class UserController {
 
     // Home page
     @GetMapping("/home")
-    public String home() {
+    public String home(Model model) {
+        long totalUsers = userRepository.count();
+        long adminSpUsers = userRepository.countByRole(Role.ADMIN_SP);
+        long adminNotesUsers = userRepository.countByRole(Role.ADMIN_NOTES);
+        long professors = professorRepository.count();
+        model.addAttribute("totalUsers", totalUsers);
+        model.addAttribute("adminSpUsers", adminSpUsers);
+        model.addAttribute("adminNotesUsers", adminNotesUsers);
+        model.addAttribute("professors", professors);
         return "AdminUser/home";
     }
 
