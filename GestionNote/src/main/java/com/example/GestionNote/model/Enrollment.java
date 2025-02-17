@@ -64,4 +64,12 @@ public class Enrollment {
     public void setStudent(Student student) {
         this.student = student;
     }
+
+    public Module getModule() {
+        return module;
+    }
+
+    public void setModule(Module module) {
+        this.module = module;
+    }
 }

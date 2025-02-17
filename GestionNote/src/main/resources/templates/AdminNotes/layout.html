@@ -69,7 +69,12 @@
                         <li class="has-subMenu">
                             <a href="#" class="">Pages</a>
                             <ul class="subMenu">
-
+                                <li class="l_sidebar">
+                                    <a th:href="@{/AdminNotes/students}" data-layout="light">Students</a>
+                                </li>
+                                <li class="l_sidebar">
+                                    <a th:href="@{/AdminNotes/grades}" data-layout="light">Grades</a>
+                                </li>
                             </ul>
                         </li>
                     </ul>
@@ -138,6 +143,13 @@
                         <a th:href="@{/AdminNotes/students}" class="">
                             <span data-feather="disc" class="nav-icon"></span>
                             <span class="menu-text">Students</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a th:href="@{/AdminNotes/grades}" class="">
+                            <span data-feather="disc" class="nav-icon"></span>
+                            <span class="menu-text">Grades</span>
                         </a>
                     </li>
 
