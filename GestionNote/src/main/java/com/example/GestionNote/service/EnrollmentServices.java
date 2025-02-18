@@ -16,8 +16,19 @@ public class EnrollmentServices {
         this.enrollmentRepository = enrollmentRepository;
     }
 
-    public List<Enrollment> getEnrollmentsByModuleAndAcademicYear(int ModuleId, String AcademicYear) {
-        return enrollmentRepository.getEnrollmentsByModuleIdAndAcademicYear(ModuleId, AcademicYear);
+    public void saveEnrollment(Enrollment enrollment) {
+        enrollmentRepository.save(enrollment);
+    }
+
+    public List<Enrollment> getEnrollmentsForGradesFile(int moduleId, String academicYear, String result, String resultFromSession, String session) {
+        if(session.equals("RATTRAPAGE"))
+            return enrollmentRepository.getEnrollmentsByModuleIdAndAcademicYearAndResultAndResultFromSession(moduleId, academicYear, result, resultFromSession);
+
+        return enrollmentRepository.getEnrollmentsByModuleIdAndAcademicYearAndResultFromSession(moduleId, academicYear, resultFromSession);
+    }
+
+    public Enrollment getEnrollmentByModuleIdAndStudentId(int ModuleId, int StudentId) {
+        return enrollmentRepository.getEnrollmentsByModuleIdAndStudentId(ModuleId, StudentId);
     }
 
     public List<String> getAcademicYears(){

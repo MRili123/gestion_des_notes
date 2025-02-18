@@ -25,6 +25,10 @@ public class ElementServices {
         return elementRepository.findById(id).orElse(null);
     }
 
+    public Element getElementByTitle(String title) {
+        return elementRepository.findByTitle(title);
+    }
+
     public Boolean deleteElement(Integer id) {
         Element element = elementRepository.findById(id).orElse(null);
         if (element == null) {

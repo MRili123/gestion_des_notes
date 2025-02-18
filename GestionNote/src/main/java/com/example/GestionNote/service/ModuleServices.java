@@ -1,24 +1,31 @@
 package com.example.GestionNote.service;
 
 import com.example.GestionNote.DTO.ModuleDTO;
+import com.example.GestionNote.DTO.ModuleGradesUploadDTO;
 import com.example.GestionNote.model.*;
 import com.example.GestionNote.model.Module;
 import com.example.GestionNote.repository.ModuleRepository;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.hibernate.NonUniqueResultException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ModuleServices {
@@ -30,6 +37,13 @@ public class ModuleServices {
     private ProfessorServices professorServices;
     @Autowired
     private EnrollmentServices enrollmentServices;
+    @Autowired
+    private StudentServices studentServices;
+    @Lazy
+    @Autowired
+    private ElementServices elementServices;
+    @Autowired
+    private ExamServices examServices;
 
     public List<Module> getAllModules(){
         return moduleRepository.findAllByDeleted(false);
@@ -101,8 +115,13 @@ public class ModuleServices {
             // Get the sheet
             Sheet sheet = workbook.getSheetAt(0);
 
-            // Get the enrollements for thsi module
-            List<Enrollment> enrollments = enrollmentServices.getEnrollmentsByModuleAndAcademicYear(module.getId(), academicYear);
+            // Get the enrollements for this module
+            List<Enrollment> enrollments;
+            if(Objects.equals(session, "Normale")){
+                enrollments = enrollmentServices.getEnrollmentsForGradesFile(module.getId(), academicYear, null, "NORMALE", "NORMALE");
+            }else{
+                enrollments = enrollmentServices.getEnrollmentsForGradesFile(module.getId(), academicYear, "R", "NORMALE", "RATTRAPAGE");
+            }
 
             // set the header data
             Row firstRow = sheet.getRow(0);
@@ -129,11 +148,25 @@ public class ModuleServices {
                 row.createCell(1).setCellValue(enrollment.getStudent().getCne());
                 row.createCell(2).setCellValue(enrollment.getStudent().getLastName());
                 row.createCell(3).setCellValue(enrollment.getStudent().getFirstName());
-                // 4 and 5 are for the grades
+                // foreach element in the module set the grade
+                int cellNum = 4;
+                for (Element element : module.getElements()){
+                    Exam exam = examServices.getExamByStudentIdAndElementIdAndSession(enrollment.getStudent().getId(), element.getId(), session.toUpperCase());
+                    if(exam != null){
+                        row.createCell(cellNum).setCellValue(exam.getGrade());
+                    }
+                    cellNum++;
+                }
                 // average between 4th and 5th cell
                 row.createCell(6).setCellFormula("AVERAGE(E" + (headerRowNum + 2) + ":F" + (headerRowNum + 2) + ")");
-                // set the result based on the averag: where V if the average is greater than 12, R if the average is less than 12 and NV IF the AVERAGE IS LESS THAN 8
-                row.createCell(7).setCellFormula("IF(G" + (headerRowNum + 2) + ">=12, \"V\", IF(G" + (headerRowNum + 2) + ">=8, \"R\", \"NV\"))");
+                if(Objects.equals(session, "Normale")){
+                    // set the result based on the averag: where V if the average is greater than 12, R if the average is less than 12 and NV IF the AVERAGE IS LESS THAN 8
+                    row.createCell(7).setCellFormula("IF(G" + (headerRowNum + 2) + ">=12, \"V\", IF(G" + (headerRowNum + 2) + ">=8, \"R\", \"NV\"))");
+                }
+                else{ // Rattrapage
+                    // set the result based on the averag: where V if the average is greater than 12 otherwise NV
+                    row.createCell(7).setCellFormula("IF(G" + (headerRowNum + 2) + ">=12, \"V\", \"NV\")");
+                }
                 headerRowNum++;
             }
 
@@ -146,5 +179,83 @@ public class ModuleServices {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Transactional
+    public String uploadGrades(ModuleGradesUploadDTO moduleGradesUploadDTO) throws IOException, NonUniqueResultException {
+        Module module = moduleRepository.findById(moduleGradesUploadDTO.getModuleId()).orElse(null);
+        if (module == null) return "Module not found";
+        // Read the file
+        Workbook workbook = new XSSFWorkbook(moduleGradesUploadDTO.getExcelFile().getInputStream());
+        Sheet sheet = workbook.getSheetAt(0);
+
+        // Test data integrity
+        String enseignant = sheet.getRow(1).getCell(1).getStringCellValue();
+        String annee = sheet.getRow(0).getCell(5).getStringCellValue();
+        String session = sheet.getRow(1).getCell(3).getStringCellValue();
+        String title = sheet.getRow(0).getCell(1).getStringCellValue();
+
+        if(!Objects.equals(title, module.getTitle())) throw new RuntimeException("Module title mismatch between the file and existing data");
+        if(!Objects.equals(annee, moduleGradesUploadDTO.getAcademicYear())) throw new RuntimeException("Academic year mismatch between the file and the request");
+        if(!Objects.equals(enseignant, module.getProfessor().getFirstName() + " " + module.getProfessor().getLastName())) throw new RuntimeException("Professor mismatch between the file and existing data");
+        if(!Objects.equals(session.toUpperCase(), moduleGradesUploadDTO.getSession())) throw new RuntimeException("Session mismatch between the file and the request");
+
+
+        // Get rows beggining from the 4th row
+        for (int i = 4; i <= sheet.getPhysicalNumberOfRows(); i++) {
+            Row row = sheet.getRow(i);
+            if (row.getCell(0).getCellType() == CellType.BLANK) continue;
+            // Get the student by ID
+            Student student = studentServices.getStudentById((int) row.getCell(0).getNumericCellValue());
+            if (student == null) throw new RuntimeException("Student not found with ID: " + row.getCell(0).getNumericCellValue());
+            // Get the enrollment
+            Enrollment enrollment = enrollmentServices.getEnrollmentByModuleIdAndStudentId(module.getId(), student.getId());
+            if (enrollment == null) throw new RuntimeException("Student not enrolled in this module");
+            // Get the elements
+            for (int j = 4; j < 6; j++) {
+                Element element = elementServices.getElementByTitle(sheet.getRow(3).getCell(j).getStringCellValue());
+                if(element == null) continue;
+
+                // Test if the exam already exists in case of update
+                Exam existingExam = examServices.getExamByStudentIdAndElementIdAndSession(student.getId(), element.getId(), session.toUpperCase());
+                if(existingExam == null) {
+                    Exam newExam = new Exam(
+                            row.getCell(j).getNumericCellValue(),
+                            moduleGradesUploadDTO.getSession(),
+                            student,
+                            element
+                    );
+                    examServices.saveExam(newExam);
+                }else{
+                    existingExam.setGrade(row.getCell(j).getNumericCellValue());
+                    examServices.saveExam(existingExam);
+                }
+            }
+            String validation = row.getCell(7).getStringCellValue();
+            switch (validation) {
+                case "V" -> {
+                    enrollment.setResult("V");
+                    enrollment.setResultFromSession(session.toUpperCase());
+                    enrollment.setUpdatedAt(LocalDateTime.now());
+                    enrollmentServices.saveEnrollment(enrollment);
+                }
+                case "R" -> {
+                    if(Objects.equals(moduleGradesUploadDTO.getSession(), "RATTRAPAGE")) throw new RuntimeException("You can't have validation set to R in the Rattrapage session");
+                    enrollment.setResult("R");
+                    enrollment.setResultFromSession(session.toUpperCase());
+                    enrollment.setUpdatedAt(LocalDateTime.now());
+                    enrollmentServices.saveEnrollment(enrollment);
+                }
+                case "NV" -> {
+                    enrollment.setResult("NV");
+                    enrollment.setResultFromSession(session.toUpperCase());
+                    enrollment.setUpdatedAt(LocalDateTime.now());
+                    enrollmentServices.saveEnrollment(enrollment);
+                }
+                default -> throw new RuntimeException("Invalid validation value");
+            }
+        }
+
+        return "Grades uploaded successfully";
     }
 }

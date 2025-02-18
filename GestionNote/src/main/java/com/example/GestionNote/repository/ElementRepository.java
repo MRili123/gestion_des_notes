@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface ElementRepository extends JpaRepository<Element, Integer> {
     List<Element> findAllByDeleted(Boolean deleted);
+    Element findByTitle(String title);
 }

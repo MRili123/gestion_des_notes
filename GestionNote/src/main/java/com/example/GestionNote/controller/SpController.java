@@ -240,7 +240,6 @@ public class SpController {
     @RequestMapping("/filieres/structure/update")
     @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
     public ResponseEntity<String> updateStructure(@RequestParam("file") MultipartFile file, Model model) {
-
         try {
             // Ensure the file is XLSX
             if (!Objects.equals(file.getContentType(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
