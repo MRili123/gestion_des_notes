@@ -1,19 +1,34 @@
 package com.example.GestionNote.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "exams")
 public class Exam {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private Integer note;
-    private Session session;
-    private LocalDateTime examDate;
-    private LocalDateTime createdAt;
+    private Double grade;
+    private String session;
+    private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt;
+
+    // Constructors
+    public Exam() {
+    }
+
+    public Exam(Double grade, String session, Student student, Element element) {
+        this.grade = grade;
+        this.session = session;
+        this.student = student;
+        this.element = element;
+    }
 
     // Relationships
     @ManyToOne(fetch = FetchType.LAZY)
@@ -23,62 +38,4 @@ public class Exam {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "element_id")
     private Element element;
-
-    // Getters and Setters
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getNote() {
-        return note;
-    }
-
-    public void setNote(Integer note) {
-        this.note = note;
-    }
-
-    public Session getSession() {
-        return session;
-    }
-
-    public void setSession(Session session) {
-        this.session = session;
-    }
-
-    public LocalDateTime getExamDate() {
-        return examDate;
-    }
-
-    public void setExamDate(LocalDateTime examDate) {
-        this.examDate = examDate;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-
-    public Student getStudent() {
-        return student;
-    }
-
-    public void setStudent(Student student) {
-        this.student = student;
-    }
 }
