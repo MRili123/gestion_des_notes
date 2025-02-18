@@ -6,17 +6,93 @@
 >
     <head>
         <title layout:fragment="title">Home - Admin SP</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        <style>
+            /* Hover & Animation */
+            .card-hover {
+                transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+                cursor: pointer;
+            }
+            .card-hover:hover {
+                transform: scale(1.05);
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            }
+
+            /* Ensure h5 title color is consistent */
+            .card-hover .card-title {
+                color: white; /* Set the desired color */
+            }
+            .card-hover:hover .card-title {
+                color: white; /* Make sure it doesn't change on hover */
+            }
+        </style>
     </head>
 <body>
     <span layout:fragment="title">Home</span>
 
     <div layout:fragment="actual_content" >
         <div class="col-lg-12">
-
             <div class="breadcrumb-main">
                 <h4 class="text-capitalize breadcrumb-title">Welcome to Admin SP</h4>
             </div>
-            <p>Here you have access for Structure and Pedagogical Management. Click on the links in the sidebar to navigate</p>
+
+            <div class="row g-4">
+                <!-- Total Filieres -->
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <a th:href="@{/AdminSp/filieres}" class="text-decoration-none">
+                        <div class="card text-white bg-primary shadow-sm rounded card-hover">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">
+                                    <i class="fa-solid fa-award"></i> Total Filieres
+                                </h5>
+                                <p class="card-text fs-4 fw-bold" th:text="${totalFilieres}">0</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Total classes -->
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <a th:href="@{/AdminSp/levels}" class="text-decoration-none">
+                        <div class="card text-white bg-danger shadow-sm rounded card-hover">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">
+                                    <i class="fa-solid fa-layer-group"></i> Total Classes (levels)
+                                </h5>
+                                <p class="card-text fs-4 fw-bold" th:text="${totalLevels}">0</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Admin Notes Users -->
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <a th:href="@{/AdminSp/modules}" class="text-decoration-none">
+                        <div class="card text-white bg-warning shadow-sm rounded card-hover">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">
+                                    <i class="fa-solid fa-book-open-reader"></i> Total Modules
+                                </h5>
+                                <p class="card-text fs-4 fw-bold" th:text="${totalModules}">0</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Professors -->
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <a th:href="@{/AdminSp/professors}" class="text-decoration-none">
+                        <div class="card text-white bg-success shadow-sm rounded card-hover">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">
+                                    <i class="fa-solid fa-person-chalkboard"></i> Professors
+                                </h5>
+                                <p class="card-text fs-4 fw-bold" th:text="${totalProfessors}">0</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
         </div>
 
     </div>

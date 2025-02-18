@@ -63,7 +63,15 @@ public class SpController {
 
 
     @RequestMapping("/home")
-    public String home() {
+    public String home(Model model) {
+        Integer totalProfessors = professorServices.getAllProfessors().size();
+        Integer totalFilieres = filiereServices.getAllFilieres().size();
+        Integer totalLevels = levelServices.getAllLevels().size();
+        Integer totalModules = moduleServices.getAllModules().size();
+        model.addAttribute("totalProfessors", totalProfessors);
+        model.addAttribute("totalFilieres", totalFilieres);
+        model.addAttribute("totalLevels", totalLevels);
+        model.addAttribute("totalModules", totalModules);
         return "AdminSp/home";
     }
 
