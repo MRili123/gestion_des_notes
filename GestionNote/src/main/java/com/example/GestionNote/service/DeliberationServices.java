@@ -277,6 +277,8 @@ public class DeliberationServices {
                 throw new RuntimeException("Invalid global moyenne or rank at row " + (i+1));
             }
 
+            if (globalMoyenne < 0 || globalMoyenne > 20) throw new RuntimeException("Invalid global moyenne at row " + (i+1));
+
             // Set the deliberation
             Deliberation deliberation = getDeliberationByStudentIdAndAcademicYear(studentId, academicYear);
             if (deliberation == null) {

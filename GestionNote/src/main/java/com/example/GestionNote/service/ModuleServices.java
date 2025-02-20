@@ -214,19 +214,30 @@ public class ModuleServices {
             Row row = sheet.getRow(i);
             if (row.getCell(0).getCellType() == CellType.BLANK) continue;
             // Get the student by ID
-            Student student = studentServices.getStudentById((int) row.getCell(0).getNumericCellValue());
+            Student student = null;
+            try {
+                student = studentServices.getStudentById((int) row.getCell(0).getNumericCellValue());
+            } catch (Exception e) {
+                throw new RuntimeException("Invalid student ID type at row: " + i);
+            }
             if (student == null) throw new RuntimeException("Student not found with ID: " + row.getCell(0).getNumericCellValue());
             // Get the enrollment
             Enrollment enrollment = enrollmentServices.getEnrollmentByModuleIdAndStudentId(module.getId(), student.getId());
             if (enrollment == null) throw new RuntimeException("Student not enrolled in this module");
             // Get the elements
             for (int j = 4; j < 6; j++) {
-                Element element = elementServices.getElementByTitle(sheet.getRow(3).getCell(j).getStringCellValue());
+                Element element = null;
+                try {
+                    element = elementServices.getElementByTitle(sheet.getRow(3).getCell(j).getStringCellValue());
+                } catch (Exception e) {
+                    throw new RuntimeException("Invalid element title type at row: " + i);
+                }
                 if(element == null) continue;
 
                 // Test if the exam already exists in case of update
                 Exam existingExam = examServices.getExamByStudentIdAndElementIdAndSessionAndAcademicYear(student.getId(), element.getId(), session.toUpperCase(), moduleGradesUploadDTO.getAcademicYear());
                 if(existingExam == null) {
+                    if(row.getCell(j).getNumericCellValue() < 0 || row.getCell(j).getNumericCellValue() > 20) throw new RuntimeException("Invalid grade value at row: " + i);
                     Exam newExam = new Exam(
                             row.getCell(j).getNumericCellValue(),
                             moduleGradesUploadDTO.getSession(),
