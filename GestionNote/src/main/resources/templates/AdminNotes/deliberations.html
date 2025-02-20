@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{AdminNotes/layout.html}">
+>
+<head>
+    <title layout:fragment="title">Deliberations - Admin Notes</title>
+</head>
+<body>
+<span layout:fragment="title">Students Deliberations</span>
+
+<div layout:fragment="actual_content" >
+    <div class="row">
+        <div class="col-lg-12 mb-30">
+            <div class="card mt-30">
+                <div class="card-body">
+
+                    <div class="userDatatable adv-table-table global-shadow border-0 bg-white w-100 adv-table">
+                        <div class="table-responsive">
+                            <div class="adv-table-table__header">
+                                <h4>Students Deliberations</h4>
+                                <div class="adv-table-table__button">
+                                    <div class="atbd-button-list d-flex flex-wrap">
+
+                                        <button class="btn btn-squared btn-success" data-toggle="modal" data-target="#generate-xlsx-modal">
+                                            <span data-feather="download"></span>
+                                            Generate XLSX
+                                        </button>
+
+                                        <button class="btn btn-squared btn-success" data-toggle="modal" data-target="#add-modal">
+                                            <span data-feather="upload"></span>
+                                            Add from XLSX
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="filter-form-container"></div>
+                            <table class="table mb-0 table-borderless adv-table" data-sorting="true" data-filter-container="#filter-form-container" data-paging-current="1" data-paging-position="right" data-paging-size="10">
+                                <thead>
+                                <tr class="userDatatable-header">
+                                    <th>
+                                        <span class="userDatatable-title">id</span>
+                                    </th>
+                                    <th>
+                                        <span class="userDatatable-title">Student</span>
+                                    </th>
+                                    <th>
+                                        <span class="userDatatable-title">Classe</span>
+                                    </th>
+                                    <th>
+                                        <span class="userDatatable-title">Final Grade</span>
+                                    </th>
+                                    <th>
+                                        <span class="userDatatable-title">Passed</span>
+                                    </th>
+                                    <th>
+                                        <span class="userDatatable-title">Rank</span>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="delib : ${deliberations}">
+                                    <td>
+                                        <div class="userDatatable-content" th:text="${delib.id}">ID</div>
+                                    </td>
+                                    <td>
+                                        <div class="userDatatable-content" th:text="${delib.student.firstName} + ' ' + ${delib.student.lastName}">
+                                            student
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="userDatatable-content" th:text="${delib.level.title}">
+                                            level
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="userDatatable-content" th:text="${delib.finalGrade}">
+                                            finalGrade
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="userDatatable-content" th:text="${delib.passed}">
+                                           <span th:classappend="${delib.passed} ? 'bg-opacity-success color-success' : 'bg-opacity-danger color-danger'"
+                                                 class="rounded-pill userDatatable-content-status">
+                                                <span th:text="${delib.passed} ? 'Validé' : 'Non Validé'"></span>
+                                           </span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="userDatatable-content" th:text="${delib.rank}">
+                                            rank
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- UPLOAD MODAL -->
+    <div class="modal-basic modal fade show" id="add-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content modal-bg-white ">
+                <div class="modal-header">
+                    <h6 class="modal-title">Add new</h6>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span data-feather="x"></span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="horizontal-form">
+                        <form action="#">
+                            <div class="form-group row mb-25">
+                                <div class="col-sm-3 d-flex aling-items-center">
+                                    <label for="inputTitleAdd" class=" col-form-label color-dark fs-14 fw-500 align-center">
+                                        Title
+                                    </label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="inputTitleAdd">
+                                </div>
+                            </div>
+                            <div class="form-group row mb-25">
+                                <div class="col-sm-3 d-flex aling-items-center">
+                                    <label for="inputAliasAdd" class=" col-form-label color-dark fs-14 fw-500 align-center">
+                                        Alias
+                                    </label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="inputAliasAdd">
+                                </div>
+                            </div>
+                            <div class="form-group row mb-25">
+                                <div class="col-sm-3 d-flex aling-items-center">
+                                    <label for="select-search-add" class="col-form-label  color-dark fs-14 fw-500 align-center">
+                                        Coordinator
+                                    </label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <div class="atbd-select-list">
+                                        <div class="atbd-select">
+                                            <select name="select-search-kkkk" id="select-search-add" class="form-control">
+                                                <option th:each="professor : ${professors}"  th:attr="value= ${professor.id}"
+                                                        th:text="${professor.firstName} + ' ' + ${professor.lastName}">
+                                                    Option
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row mb-25">
+                                <div class="col-sm-3 d-flex aling-items-center">
+                                    <label for="inputAccStartAdd" class="col-form-label  color-dark fs-14 fw-500 align-center">
+                                        Accreditation Start
+                                    </label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input placeholder="YYYY-MM-DD" type="text" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="inputAccStartAdd">
+                                    <p style="color: #d00000; display: none;">
+                                        Invalid Date
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="form-group row mb-25">
+                                <div class="col-sm-3 d-flex aling-items-center">
+                                    <label for="inputAccEndAdd" class="col-form-label  color-dark fs-14 fw-500 align-center">
+                                        Accreditation End
+                                    </label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input placeholder="YYYY-MM-DD" type="text" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="inputAccEndAdd">
+                                    <p style="color: #d00000; display: none;">
+                                        Invalid Date
+                                    </p>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="save-add" class="btn btn-primary btn-sm">Save changes</button>
+                    <button type="button" class="btn btn-light btn-sm" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- UPLOAD MODAL -->
+
+    <!-- GENERATE MODAL -->
+    <div class="modal-basic modal fade show" id="generate-xlsx-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content modal-bg-white ">
+                <div class="modal-header">
+                    <h6 class="modal-title">Generate Deliberation file for a level</h6>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span data-feather="x"></span></button>
+                </div>
+                <div class="modal-body">
+                    <p>Please select the level for which you want to generate the deliberation file.</p>
+                    <div class="form-group row mb-25">
+                        <div class="col-sm-3 d-flex aling-items-center">
+                            <label for="select-search-edit" class="col-form-label  color-dark fs-14 fw-500 align-center">
+                                Classe (Level)
+                            </label>
+                        </div>
+                        <div class="col-sm-9">
+                            <div class="atbd-select-list">
+                                <div class="atbd-select ">
+                                    <select name="select-search-kkkk" id="select-search-edit" class="form-control">
+                                        <option th:each="level : ${levels}"  th:attr="value= ${level.id}"
+                                                th:text="${level.title}"
+                                        >
+                                            level
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group row mb-25">
+                        <div class="col-sm-3 d-flex aling-items-center">
+                            <label for="select-nextL-add" class="col-form-label  color-dark fs-14 fw-500 align-center">
+                                Academic Year
+                            </label>
+                        </div>
+                        <div class="col-sm-9">
+                            <div class="atbd-select-list">
+                                <div class="atbd-select ">
+                                    <select name="select-search-kkkk" id="select-nextL-add" class="form-control">
+                                        <option th:each="academicYear : ${academicYears}"  th:attr="value= ${academicYear}"
+                                                th:text="${academicYear}"
+                                        >
+                                            academicYear
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form th:action="@{/AdminNotes/deliberation/generate}"  method="GET">
+                        <a>
+                            <button type="submit" class="btn btn-outline-info btn-rounded btn-md">
+                                <span data-feather="file"></span>
+                                Generate EXCEL file
+                            </button>
+                            <input type="hidden" name="levelId" class="levelIdInput">
+                            <input type="hidden" name="academicYear" class="academicYearInput">
+                        </a>
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- GENERATE MODAL -->
+
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $(document).on('change', '#select-search-add, #select-search-edit', function () {
+                const levelId = $(this).val();
+                $(".levelIdInput").val(levelId);
+            });
+            $(document).on('change', '#select-nextL-add, #select-nextL-edit', function () {
+                const academicYear = $(this).val();
+                $(".academicYearInput").val(academicYear);
+            });
+        });
+    </script>
+    <!-- Script to handle the file upload for adding -->
+    <script>
+        document.querySelector('#upload-area-add').addEventListener('change', function(event) {
+            const fileName = event.target.files[0] ? event.target.files[0].name : 'No file selected';
+            document.getElementById('file-name-display-add').textContent = fileName;
+            document.getElementById('file-name-display-add').className = 'color-success fs-16';
+        });
+
+        $(document).on("click", "#submit-add-file", function () {
+            const file = $("#upload-area-add")[0].files[0];
+            if (!file) {
+                alert("Please select a file to upload.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            $.ajax({
+                url: '/AdminSp/filieres/structure/upload', // URL for the file upload request
+                type: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    alert(response);
+                    location.reload(); // Reload the page to see the new data
+                },
+                error: function (error) {
+                    if(error.status === 405) {
+                        window.location.href = '/access-denied';
+                    }
+                    alert(error.responseText);
+                }
+            });
+        });
+    </script>
+
+
+</div>
+
+</body>
+</html>

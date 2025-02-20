@@ -151,7 +151,7 @@ public class ModuleServices {
                 // foreach element in the module set the grade
                 int cellNum = 4;
                 for (Element element : module.getElements()){
-                    Exam exam = examServices.getExamByStudentIdAndElementIdAndSession(enrollment.getStudent().getId(), element.getId(), session.toUpperCase());
+                    Exam exam = examServices.getExamByStudentIdAndElementIdAndSessionAndAcademicYear(enrollment.getStudent().getId(), element.getId(), session.toUpperCase(), academicYear);
                     if(exam != null){
                         row.createCell(cellNum).setCellValue(exam.getGrade());
                     }
@@ -217,11 +217,12 @@ public class ModuleServices {
                 if(element == null) continue;
 
                 // Test if the exam already exists in case of update
-                Exam existingExam = examServices.getExamByStudentIdAndElementIdAndSession(student.getId(), element.getId(), session.toUpperCase());
+                Exam existingExam = examServices.getExamByStudentIdAndElementIdAndSessionAndAcademicYear(student.getId(), element.getId(), session.toUpperCase(), moduleGradesUploadDTO.getAcademicYear());
                 if(existingExam == null) {
                     Exam newExam = new Exam(
                             row.getCell(j).getNumericCellValue(),
                             moduleGradesUploadDTO.getSession(),
+                            moduleGradesUploadDTO.getAcademicYear(),
                             student,
                             element
                     );

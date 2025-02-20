@@ -14,4 +14,8 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Integer>
     List<Enrollment> getEnrollmentsByModuleIdAndAcademicYearAndResultAndResultFromSession(Integer moduleId, String academicYear, String result, String resultFromSession);
 
     Enrollment getEnrollmentsByModuleIdAndStudentId(Integer moduleId, Integer studentId);
+
+    List<Enrollment> getEnrollmentsByModuleId(Integer moduleId);
+
+    List<Enrollment> getEnrollmentsByModuleIdAndAcademicYear(Integer moduleId, String academicYear);
 }

@@ -19,6 +19,8 @@ public class StudentServices {
     }
 
     public Student getStudentById(int id) {
-        return studentRepository.findById(id).orElse(null);
+        Student student = studentRepository.getStudentById(id);
+        int a = 5;
+        return student;
     }
 }

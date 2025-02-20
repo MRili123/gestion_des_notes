@@ -38,6 +38,10 @@ public class NotesController {
     private ActivityLogService activityLogService;
     @Autowired
     private EnrollmentServices enrollmentServices;
+    @Autowired
+    private DeliberationServices deliberationServices;
+    @Autowired
+    private LevelServices levelServices;
 
     // Make the user object accessible to all controller routes
     @ModelAttribute
@@ -159,6 +163,46 @@ public class NotesController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
+
+    @RequestMapping("/deliberations")
+    public String deliberations(Model model) {
+        List<Deliberation> deliberations = deliberationServices.getAll();
+        List<Level> levels = levelServices.getAllLevels();
+        List<String> academicYears = enrollmentServices.getAcademicYears();
+        model.addAttribute("deliberations", deliberations);
+        model.addAttribute("levels", levels);
+        model.addAttribute("academicYears", academicYears);
+        return "AdminNotes/deliberations";
+    }
+
+    @RequestMapping("/deliberation/generate")
+    @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
+    public ResponseEntity<byte[]> generateDeliberationFile(@RequestParam("levelId") int levelId, @RequestParam("academicYear") String academicYear, Model model) {
+        try {
+            Level level = levelServices.getLevelById(levelId);
+            if (level == null) return ResponseEntity.notFound().build();
+
+            byte[] deliberationFile = deliberationServices.generateDeliberationFile(level, academicYear);
+            String fileName = "deliberation_" + level.getAlias() + ".xlsx";
+
+            // Set the headers and return the response
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentDispositionFormData("attachment", fileName);
+
+            // LOG ACTIVITY
+            Integer userId = ((User) model.getAttribute("user")).getId();
+            activityLogService.save("Deliberation generated for level " + level.getId(), userId);
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(deliberationFile);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
 }
 

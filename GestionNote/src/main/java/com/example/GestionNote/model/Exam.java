@@ -16,6 +16,7 @@ public class Exam {
     private Integer id;
     private Double grade;
     private String session;
+    private String academicYear;
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt;
 
@@ -23,9 +24,10 @@ public class Exam {
     public Exam() {
     }
 
-    public Exam(Double grade, String session, Student student, Element element) {
+    public Exam(Double grade, String session, String academicYear, Student student, Element element) {
         this.grade = grade;
         this.session = session;
+        this.academicYear = academicYear;
         this.student = student;
         this.element = element;
     }

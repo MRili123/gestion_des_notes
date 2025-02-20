@@ -31,6 +31,10 @@ public class EnrollmentServices {
         return enrollmentRepository.getEnrollmentsByModuleIdAndStudentId(ModuleId, StudentId);
     }
 
+    public List<Enrollment> getEnrollmentsByModuleIdAndAcademicYear(int moduleId, String academicYear) {
+        return enrollmentRepository.getEnrollmentsByModuleIdAndAcademicYear(moduleId, academicYear);
+    }
+
     public List<String> getAcademicYears(){
         List<Enrollment> enrollments = enrollmentRepository.findAll();
         List<String> academicYears = new ArrayList<>(List.of());
