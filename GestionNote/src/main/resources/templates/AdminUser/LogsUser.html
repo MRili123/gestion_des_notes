@@ -76,7 +76,7 @@
                     </div>
                   </td>
                   <td>
-                    <div class="userDatatable-content" th:text="${loginLog.user.username}">
+                   <div class="userDatatable-content" th:text="${loginLog.user != null ? loginLog.user.username : 'N/A'}">
                       EMAIL
                     </div>
                   </td>

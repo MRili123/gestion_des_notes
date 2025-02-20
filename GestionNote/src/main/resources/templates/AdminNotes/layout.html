@@ -75,6 +75,9 @@
                                 <li class="l_sidebar">
                                     <a th:href="@{/AdminNotes/grades}" data-layout="light">Grades</a>
                                 </li>
+                                <li class="l_sidebar">
+                                    <a th:href="@{/AdminNotes/deliberations}" data-layout="light">Deliberations</a>
+                                </li>
                             </ul>
                         </li>
                     </ul>
@@ -153,6 +156,13 @@
                         </a>
                     </li>
 
+                    <li>
+                        <a th:href="@{/AdminNotes/deliberations}" class="">
+                            <span data-feather="disc" class="nav-icon"></span>
+                            <span class="menu-text">Deliberations</span>
+                        </a>
+                    </li>
+
                     <li class="has-child">
                         <a href="#" class="">
                             <span data-feather="layout" class="nav-icon"></span>
@@ -208,6 +218,17 @@
 <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDduF2tLXicDEPDMAtC6-NLOekX0A5vlnY"></script>
 <!-- inject:js-->
 <script src="/vendor_assets/js/jquery/jquery-3.5.1.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $.ajaxSetup({
+            statusCode: {
+                405: function() {
+                    window.location.href = '/access-denied';
+                }
+            }
+        });
+    });
+</script>
 <script src="/vendor_assets/js/jquery/jquery-ui.js"></script>
 <script src="/vendor_assets/js/bootstrap/popper.js"></script>
 <script src="/vendor_assets/js/bootstrap/bootstrap.min.js"></script>

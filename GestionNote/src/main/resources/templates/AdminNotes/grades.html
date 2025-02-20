@@ -175,7 +175,12 @@
                         <span data-feather="x"></span></button>
                 </div>
                 <div class="modal-body">
-                    <p>Please download the template file, fill it with the data you want to import, and then upload it here. Do not change the structure of the file.</p>
+                    <div class=" alert alert-danger " role="alert">
+                        <div class="alert-content">
+                            <p>Please download the template file, fill it with the data you want to import, and then upload it here. Do not change the structure of the file.</p>
+                            <p>Uploading the file again will replace the existing data.</p>
+                        </div>
+                    </div>
 
                     <div class="form-group row mb-25">
                         <div class="col-sm-3 d-flex aling-items-center">
@@ -247,6 +252,47 @@
             $(document).on('change', '#select-search-add, #select-search-edit', function () {
                 const academicYear = $(this).val();
                 $(".academicYearInput").val(academicYear);
+            });
+        });
+    </script>
+
+    <!-- HANDLE GRADE FILE UPLOAD -->
+    <script>
+        document.querySelector('#upload-area-add').addEventListener('change', function(event) {
+            const fileName = event.target.files[0] ? event.target.files[0].name : 'No file selected';
+            document.getElementById('file-name-display-add').textContent = fileName;
+            document.getElementById('file-name-display-add').className = 'color-success fs-16';
+        });
+
+        $(document).on("click", "#submit-module-grades", function () {
+            const file = $("#upload-area-add")[0].files[0];
+            if (!file) {
+                alert("Please select a file to upload.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("excelFile", file);
+            formData.append("moduleId", $(".moduleIdInput").val());
+            formData.append("academicYear", $(".academicYearInput").val());
+            formData.append("session", $("input[name='radio-vertical']:checked").val());
+
+            $.ajax({
+                url: '/AdminNotes/module/grades-file/upload', // URL for the file upload request
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    alert(response);
+                    location.reload(); // Reload the page to see the new data
+                },
+                error: function (error) {
+                    if(error.status === 405) {
+                        window.location.href = '/access-denied';
+                    }
+                    alert(error.responseText);
+                }
             });
         });
     </script>

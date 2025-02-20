@@ -1,19 +1,37 @@
 package com.example.GestionNote.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "deliberations")
 public class Deliberation {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-    private Double finalNote;
+    private Double finalGrade;
     private Boolean passed;
     private Integer rank;
-    private LocalDateTime createdAt;
+    private String academicYear;
+    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime updatedAt;
+
+    public Deliberation() {
+    }
+
+    public Deliberation(String academicYear, Student student, Level level, Double finalGrade, Boolean passed, Integer rank) {
+        this.finalGrade = finalGrade;
+        this.passed = passed;
+        this.rank = rank;
+        this.academicYear = academicYear;
+        this.student = student;
+        this.level = level;
+    }
 
     // Relationships
     @ManyToOne(fetch = FetchType.LAZY)
@@ -23,60 +41,4 @@ public class Deliberation {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "level_id")
     private Level level;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Double getFinalNote() {
-        return finalNote;
-    }
-
-    public void setFinalNote(Double finalNote) {
-        this.finalNote = finalNote;
-    }
-
-    public Boolean getPassed() {
-        return passed;
-    }
-
-    public void setPassed(Boolean passed) {
-        this.passed = passed;
-    }
-
-    public Integer getRank() {
-        return rank;
-    }
-
-    public void setRank(Integer rank) {
-        this.rank = rank;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Student getStudent() {
-        return student;
-    }
-
-    public void setStudent(Student student) {
-        this.student = student;
-    }
-
-    public Level getLevel() {
-        return level;
-    }
-
-    public void setLevel(Level level) {
-        this.level = level;
-    }
 }
