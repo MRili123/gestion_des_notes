@@ -190,10 +190,18 @@ public class ModuleServices {
         Sheet sheet = workbook.getSheetAt(0);
 
         // Test data integrity
-        String enseignant = sheet.getRow(1).getCell(1).getStringCellValue();
-        String annee = sheet.getRow(0).getCell(5).getStringCellValue();
-        String session = sheet.getRow(1).getCell(3).getStringCellValue();
-        String title = sheet.getRow(0).getCell(1).getStringCellValue();
+        String enseignant = null;
+        String annee = null;
+        String session = null;
+        String title = null;
+        try {
+            enseignant = sheet.getRow(1).getCell(1).getStringCellValue();
+            annee = sheet.getRow(0).getCell(5).getStringCellValue();
+            session = sheet.getRow(1).getCell(3).getStringCellValue();
+            title = sheet.getRow(0).getCell(1).getStringCellValue();
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid file format");
+        }
 
         if(!Objects.equals(title, module.getTitle())) throw new RuntimeException("Module title mismatch between the file and existing data");
         if(!Objects.equals(annee, moduleGradesUploadDTO.getAcademicYear())) throw new RuntimeException("Academic year mismatch between the file and the request");
@@ -232,7 +240,12 @@ public class ModuleServices {
                     examServices.saveExam(existingExam);
                 }
             }
-            String validation = row.getCell(7).getStringCellValue();
+            String validation = null;
+            try {
+                validation = row.getCell(7).getStringCellValue();
+            } catch (Exception e) {
+                throw new RuntimeException("Invalid validation value type");
+            }
             switch (validation) {
                 case "V" -> {
                     enrollment.setResult("V");
