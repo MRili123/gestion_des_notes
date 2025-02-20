@@ -28,7 +28,7 @@
                                             Generate XLSX
                                         </button>
 
-                                        <button class="btn btn-squared btn-success" data-toggle="modal" data-target="#add-modal">
+                                        <button class="btn btn-squared btn-success" data-toggle="modal" data-target="#upload-xlsx-modal">
                                             <span data-feather="upload"></span>
                                             Add from XLSX
                                         </button>
@@ -80,7 +80,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <div class="userDatatable-content" th:text="${delib.passed}">
+                                        <div class="userDatatable-content">
                                            <span th:classappend="${delib.passed} ? 'bg-opacity-success color-success' : 'bg-opacity-danger color-danger'"
                                                  class="rounded-pill userDatatable-content-status">
                                                 <span th:text="${delib.passed} ? 'Validé' : 'Non Validé'"></span>
@@ -106,87 +106,36 @@
 
 
     <!-- UPLOAD MODAL -->
-    <div class="modal-basic modal fade show" id="add-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-basic modal fade show" id="upload-xlsx-modal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-md" role="document">
             <div class="modal-content modal-bg-white ">
                 <div class="modal-header">
-                    <h6 class="modal-title">Add new</h6>
+                    <h6 class="modal-title">Upload Deliberation File</h6>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span data-feather="x"></span></button>
                 </div>
                 <div class="modal-body">
-                    <div class="horizontal-form">
-                        <form action="#">
-                            <div class="form-group row mb-25">
-                                <div class="col-sm-3 d-flex aling-items-center">
-                                    <label for="inputTitleAdd" class=" col-form-label color-dark fs-14 fw-500 align-center">
-                                        Title
-                                    </label>
-                                </div>
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="inputTitleAdd">
-                                </div>
-                            </div>
-                            <div class="form-group row mb-25">
-                                <div class="col-sm-3 d-flex aling-items-center">
-                                    <label for="inputAliasAdd" class=" col-form-label color-dark fs-14 fw-500 align-center">
-                                        Alias
-                                    </label>
-                                </div>
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="inputAliasAdd">
-                                </div>
-                            </div>
-                            <div class="form-group row mb-25">
-                                <div class="col-sm-3 d-flex aling-items-center">
-                                    <label for="select-search-add" class="col-form-label  color-dark fs-14 fw-500 align-center">
-                                        Coordinator
-                                    </label>
-                                </div>
-                                <div class="col-sm-9">
-                                    <div class="atbd-select-list">
-                                        <div class="atbd-select">
-                                            <select name="select-search-kkkk" id="select-search-add" class="form-control">
-                                                <option th:each="professor : ${professors}"  th:attr="value= ${professor.id}"
-                                                        th:text="${professor.firstName} + ' ' + ${professor.lastName}">
-                                                    Option
-                                                </option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group row mb-25">
-                                <div class="col-sm-3 d-flex aling-items-center">
-                                    <label for="inputAccStartAdd" class="col-form-label  color-dark fs-14 fw-500 align-center">
-                                        Accreditation Start
-                                    </label>
-                                </div>
-                                <div class="col-sm-9">
-                                    <input placeholder="YYYY-MM-DD" type="text" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="inputAccStartAdd">
-                                    <p style="color: #d00000; display: none;">
-                                        Invalid Date
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="form-group row mb-25">
-                                <div class="col-sm-3 d-flex aling-items-center">
-                                    <label for="inputAccEndAdd" class="col-form-label  color-dark fs-14 fw-500 align-center">
-                                        Accreditation End
-                                    </label>
-                                </div>
-                                <div class="col-sm-9">
-                                    <input placeholder="YYYY-MM-DD" type="text" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="inputAccEndAdd">
-                                    <p style="color: #d00000; display: none;">
-                                        Invalid Date
-                                    </p>
-                                </div>
-                            </div>
-                        </form>
+                    <div class=" alert alert-danger " role="alert">
+                        <div class="alert-content">
+                            <p>Please download the deliberation file, perform any necessary changes then upload it here. Do not change the structure of the file.</p>
+                            <p>Reuploading again will replace the previous data.</p>
+                        </div>
                     </div>
+
+                    <div class="atbd-upload">
+                        <div class="atbd-upload-avatar media-import">
+                            <span data-feather="upload"></span>
+                            <p class="color-dark fs-20">Drop File or <a href="#">Browse</a></p>
+                        </div>
+                        <div class="avatar-up">
+                            <input type="file" class="upload-avatar-input" id="upload-area-add">
+                        </div>
+                        <div id="file-name-display-add" class="color-danger fs-16">No file selected</div>
+                    </div>
+
                 </div>
                 <div class="modal-footer">
-                    <button type="button" id="save-add" class="btn btn-primary btn-sm">Save changes</button>
+                    <button type="button" id="submit-upload-file" class="btn btn-primary btn-sm">Submit</button>
                     <button type="button" class="btn btn-light btn-sm" data-dismiss="modal">Cancel</button>
                 </div>
             </div>
@@ -289,7 +238,7 @@
             document.getElementById('file-name-display-add').className = 'color-success fs-16';
         });
 
-        $(document).on("click", "#submit-add-file", function () {
+        $(document).on("click", "#submit-upload-file", function () {
             const file = $("#upload-area-add")[0].files[0];
             if (!file) {
                 alert("Please select a file to upload.");
@@ -297,10 +246,10 @@
             }
 
             const formData = new FormData();
-            formData.append("file", file);
+            formData.append('deliberationFile', file);
 
             $.ajax({
-                url: '/AdminSp/filieres/structure/upload', // URL for the file upload request
+                url: '/AdminNotes/deliberation/upload', // URL for the file upload request
                 type: "POST",
                 data: formData,
                 contentType: false,

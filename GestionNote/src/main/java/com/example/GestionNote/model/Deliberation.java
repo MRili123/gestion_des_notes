@@ -21,6 +21,18 @@ public class Deliberation {
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt;
 
+    public Deliberation() {
+    }
+
+    public Deliberation(String academicYear, Student student, Level level, Double finalGrade, Boolean passed, Integer rank) {
+        this.finalGrade = finalGrade;
+        this.passed = passed;
+        this.rank = rank;
+        this.academicYear = academicYear;
+        this.student = student;
+        this.level = level;
+    }
+
     // Relationships
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id")

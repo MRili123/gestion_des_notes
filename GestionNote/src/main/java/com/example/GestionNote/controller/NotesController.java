@@ -203,6 +203,33 @@ public class NotesController {
         }
     }
 
+    @RequestMapping("/deliberation/upload")
+    @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
+    public ResponseEntity<String> uploadDeliberation(MultipartFile deliberationFile, Model model) {
+        try {
+            // Ensure the file is XLSX
+            if (!Objects.equals(deliberationFile.getContentType(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid file type, please upload an XLSX file");
+            }
+            // convert the file to bytes
+            byte[] byteArrayFile = deliberationFile.getBytes();
+
+            String result = deliberationServices.uploadDeliberationFile(byteArrayFile);
+
+            // LOG ACTIVITY
+            Integer userId = ((User) model.getAttribute("user")).getId();
+            activityLogService.save(result, userId);
+
+            return ResponseEntity.ok(result);
+        }
+        catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
 
 }
 

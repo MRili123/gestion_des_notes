@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,16 +29,26 @@ public class DeliberationServices {
     private final EnrollmentServices enrollmentServices;
     private final StudentServices studentServices;
     private final ExamServices examServices;
+    private final LevelServices levelServices;
 
-    public DeliberationServices(DeliberationRepository deliberationRepository, EnrollmentServices enrollmentServices, StudentServices studentServices, ExamServices examServices) {
+    public DeliberationServices(DeliberationRepository deliberationRepository, EnrollmentServices enrollmentServices, StudentServices studentServices, ExamServices examServices, LevelServices levelServices) {
         this.deliberationRepository = deliberationRepository;
         this.enrollmentServices = enrollmentServices;
         this.studentServices = studentServices;
         this.examServices = examServices;
+        this.levelServices = levelServices;
     }
 
     public List<Deliberation> getAll() {
         return deliberationRepository.findAll();
+    }
+
+    public void save(Deliberation deliberation) {
+        deliberationRepository.save(deliberation);
+    }
+
+    public Deliberation getDeliberationByStudentIdAndAcademicYear(int studentId, String academicYear) {
+        return deliberationRepository.getDeliberationByStudentIdAndAcademicYear(studentId, academicYear);
     }
 
     @Transactional(readOnly = true)
@@ -216,5 +227,78 @@ public class DeliberationServices {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Transactional
+    public String uploadDeliberationFile(byte[] file) throws IOException {
+        // Read the workbook
+        InputStream inputStream = new ByteArrayInputStream(file);
+        Workbook workbook = new XSSFWorkbook(inputStream);
+        Sheet sheet = workbook.getSheetAt(0);
+
+        // Get Header data
+        String academicYear = null;
+        String levelAlias = null;
+        try {
+            academicYear = sheet.getRow(0).getCell(1).getStringCellValue();
+            levelAlias = sheet.getRow(1).getCell(1).getStringCellValue();
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid file format");
+        }
+
+        // Get the level
+        Level level = levelServices.getLevelByAlias(levelAlias);
+
+        String result = "Deliberation uploaded successfully";
+
+        // Iterate over the rows
+        for (int i = 5; i <= sheet.getLastRowNum(); i++) {
+            Row row = sheet.getRow(i);
+            int studentId = 0;
+            try {
+                studentId = (int) row.getCell(0).getNumericCellValue();
+            } catch (Exception e) {
+                throw new RuntimeException("Invalid student id at row " + i+1);
+            }
+            Student student = studentServices.getStudentById(studentId);
+            if (student == null) throw new RuntimeException("Student with id " + studentId + " not found");
+
+            int lastColumn = row.getLastCellNum() - 1;
+            double globalMoyenne = 0;
+            int globalRank = 0;
+            FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+            try {
+                Cell moyenneCell = row.getCell(lastColumn -1);
+                Cell rankCell = row.getCell(lastColumn);
+
+                globalMoyenne = evaluator.evaluate(moyenneCell).getNumberValue();
+                globalRank = (int) evaluator.evaluate(rankCell).getNumberValue();
+            } catch (Exception e) {
+                throw new RuntimeException("Invalid global moyenne or rank at row " + (i+1));
+            }
+
+            // Set the deliberation
+            Deliberation deliberation = getDeliberationByStudentIdAndAcademicYear(studentId, academicYear);
+            if (deliberation == null) {
+                deliberation = new Deliberation(
+                        academicYear,
+                        student,
+                        level,
+                        globalMoyenne,
+                        globalMoyenne >= 12,
+                        globalRank
+                );
+            } else {
+                deliberation.setFinalGrade(globalMoyenne);
+                deliberation.setPassed(globalMoyenne >= 12);
+                deliberation.setRank(globalRank);
+                deliberation.setAcademicYear(academicYear);
+                result = "Deliberation updated successfully";
+            }
+            save(deliberation);
+        }
+
+        workbook.close();
+        return result;
     }
 }
