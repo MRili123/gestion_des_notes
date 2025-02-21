@@ -17,6 +17,7 @@ public class Student {
     private String lastName;
     private Integer CurrentLevelId;
     private LocalDateTime createdAt;
+    private boolean deleted = false;
 
     // Relationships
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -111,4 +112,6 @@ public class Student {
     public void setDeliberations(Set<Deliberation> deliberations) {
         this.deliberations = deliberations;
     }
+    public boolean getDeleted() {return deleted;}
+    public void setDeleted(boolean deleted) {this.deleted = deleted;}
 }
