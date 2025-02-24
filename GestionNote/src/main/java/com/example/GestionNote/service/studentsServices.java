@@ -1,6 +1,7 @@
 package com.example.GestionNote.service;
 
 import com.example.GestionNote.DTO.StudentDTO;
+import com.example.GestionNote.model.Level;
 import com.example.GestionNote.model.Student;
 import com.example.GestionNote.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,8 @@ import java.util.List;
 public class studentsServices {
     @Autowired
     private StudentRepository studentRepository;
+    @Autowired
+    private LevelServices levelServices;
 
     public List<Student> getAllStudents() {
         return studentRepository.findByDeleted(false);
@@ -42,7 +45,8 @@ public class studentsServices {
             student.setFirstName(updatedStudent.getFirstName());
             student.setLastName(updatedStudent.getLastName());
             student.setCne(updatedStudent.getCne());
-            student.setCurrentLevelId(updatedStudent.getCurrentLevelId());
+            Level currentlevel = levelServices.getLevelById(updatedStudent.getCurrentLevelId());
+            student.setCurrentLevel(currentlevel);
             studentRepository.save(student);
             return true;
         }
@@ -54,7 +58,8 @@ public class studentsServices {
         student.setFirstName(newStudent.getFirstName());
         student.setLastName(newStudent.getLastName());
         student.setCne(newStudent.getCne());
-        student.setCurrentLevelId(newStudent.getCurrentLevelId());
+        Level currentlevel = levelServices.getLevelById(newStudent.getCurrentLevelId());
+        student.setCurrentLevel(currentlevel);
         studentRepository.save(student);
         return true;
     }

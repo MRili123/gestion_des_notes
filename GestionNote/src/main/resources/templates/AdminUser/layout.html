@@ -161,16 +161,16 @@
                             <span data-feather="disc" class="nav-icon"></span>
                             <span class="menu-text">professors</span>
                         </a>
-<!--                        <a th:href="@{/AdminSp/classes}" class="">-->
-<!--                            <span data-feather="disc" class="nav-icon"></span>-->
-<!--                            <span class="menu-text">Classes</span>-->
-<!--                        </a>-->
+                        <a th:href="@{/AdminUser/logs}" class="">
+                            <span data-feather="disc" class="nav-icon"></span>
+                            <span class="menu-text">Logs</span>
+                        </a>
                     </li>
                     <li>
-<!--                        <a th:href="@{/AdminSp/modules}" class="">-->
-<!--                            <span data-feather="disc" class="nav-icon"></span>-->
-<!--                            <span class="menu-text">Modules</span>-->
-<!--                        </a>-->
+                        <a th:href="@{/AdminUser/activity}" class="">
+                            <span data-feather="disc" class="nav-icon"></span>
+                            <span class="menu-text">activity</span>
+                        </a>
                     </li>
                     <li>
 <!--                        <a th:href="@{/AdminSp/elements}" class="">-->
@@ -240,6 +240,17 @@
 <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDduF2tLXicDEPDMAtC6-NLOekX0A5vlnY"></script>
 
 <script src="/vendor_assets/js/jquery/jquery-3.5.1.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $.ajaxSetup({
+            statusCode: {
+                405: function() {
+                    window.location.href = '/access-denied';
+                }
+            }
+        });
+    });
+</script>
 <script src="/vendor_assets/js/jquery/jquery-ui.js"></script>
 <script src="/vendor_assets/js/bootstrap/popper.js"></script>
 <script src="/vendor_assets/js/bootstrap/bootstrap.min.js"></script>

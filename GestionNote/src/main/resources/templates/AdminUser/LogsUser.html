@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{AdminUser/layout.html}">
+
+<head>
+  <title layout:fragment="title">Home - Admin USER</title>
+</head>
+<body>
+<span layout:fragment="title">Login attempt</span>
+
+<div layout:fragment="actual_content" >
+  <div class="row">
+    <div class="col-lg-12 mb-30">
+      <div class="card mt-30">
+        <div class="card-body">
+
+          <div class="userDatatable adv-table-table global-shadow border-0 bg-white w-100 adv-table">
+            <div class="table-responsive">
+              <div class="adv-table-table__header">
+                <h4>Login attempt</h4>
+
+              </div>
+              <div id="filter-form-container"></div>
+              <table class="table mb-0 table-borderless adv-table" data-sorting="true" data-filter-container="#filter-form-container" data-paging-current="1" data-paging-position="right" data-paging-size="10">
+                <thead>
+                <tr class="userDatatable-header">
+                  <th>
+                    <span class="userDatatable-title">id</span>
+                  </th>
+                  <th>
+                    <span class="userDatatable-title">login at</span>
+                  </th>
+                  <th>
+                    <span class="userDatatable-title">Ip Address</span>
+                  </th>
+                  <th>
+                    <span class="userDatatable-title">Success</span>
+                  </th>
+                  <th>
+                    <span class="userDatatable-title">Reason</span>
+                  </th>
+                  <th data-type="html">
+                    <span class="userDatatable-title">user</span>
+                  </th>
+
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="loginLog : ${loginLogs}">
+                <td>
+                    <div class="userDatatable-content" th:text="${loginLog.id}">ID</div>
+                  </td>
+                  <td>
+                    <div class="userDatatable-content" th:text="${loginLog.createdAt}">
+                   created at
+                    </div>
+                  </td>
+                  <td>
+                    <div class="userDatatable-content" th:text="${loginLog.ipAddress}">
+                      ipAddress
+                    </div>
+                  </td>
+                  <td>
+                    <div class="userDatatable-content" >
+                   <span th:classappend="${loginLog.success} ? 'bg-opacity-success color-success' : 'bg-opacity-danger color-danger'"
+                         class="rounded-pill userDatatable-content-status">
+        <span th:text="${loginLog.success} ? 'true' : 'false'"></span>
+    </span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="userDatatable-content" th:text="${loginLog.reason}">
+                      CIN
+                    </div>
+                  </td>
+                  <td>
+                   <div class="userDatatable-content" th:text="${loginLog.user != null ? loginLog.user.username : 'N/A'}">
+                      EMAIL
+                    </div>
+                  </td>
+                </tr>
+
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+</body>
+</html>

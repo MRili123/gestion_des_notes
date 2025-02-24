@@ -63,7 +63,15 @@ public class SpController {
 
 
     @RequestMapping("/home")
-    public String home() {
+    public String home(Model model) {
+        Integer totalProfessors = professorServices.getAllProfessors().size();
+        Integer totalFilieres = filiereServices.getAllFilieres().size();
+        Integer totalLevels = levelServices.getAllLevels().size();
+        Integer totalModules = moduleServices.getAllModules().size();
+        model.addAttribute("totalProfessors", totalProfessors);
+        model.addAttribute("totalFilieres", totalFilieres);
+        model.addAttribute("totalLevels", totalLevels);
+        model.addAttribute("totalModules", totalModules);
         return "AdminSp/home";
     }
 
@@ -125,10 +133,7 @@ public class SpController {
     }
 
     @RequestMapping("/filieres/delete/{id}")
-
     @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
-
-
     public ResponseEntity<String> deleteFiliere(@PathVariable int id, Model model) {
 
         Boolean result = filiereServices.deleteFiliere(id);
@@ -142,9 +147,7 @@ public class SpController {
     }
 
     @RequestMapping("/filieres/add")
-
     @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
-
     public ResponseEntity<String> addFiliere(@RequestBody Filiere newFiliere, Model model) {
 
         Boolean result = filiereServices.createFiliere(newFiliere);
@@ -158,9 +161,7 @@ public class SpController {
     }
 
     @RequestMapping("/filieres/edit/{id}")
-
     @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
-
     public ResponseEntity<String> editFiliere(@PathVariable int id, @RequestBody Filiere updatedFiliere, Model model) {
 
         Boolean result = filiereServices.updateFiliere(id, updatedFiliere);
@@ -174,9 +175,7 @@ public class SpController {
     }
 
     @RequestMapping("/filieres/template/download")
-
     @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
-
     public ResponseEntity<byte[]> downloadTemplate(Model model) {
 
         byte[] template = filiereServices.getTemplateFileXLSX();
@@ -196,9 +195,7 @@ public class SpController {
     }
 
     @RequestMapping("/filieres/structure/download/{id}")
-
     @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
-
     public ResponseEntity<byte[]> downloadStructure(@PathVariable int id, Model model) {
 
         try {
@@ -224,9 +221,7 @@ public class SpController {
     }
 
     @RequestMapping("/filieres/structure/upload")
-
     @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
-
     public ResponseEntity<String> uploadStructure(@RequestParam("file") MultipartFile file, Model model) {
 
         try {
@@ -251,11 +246,8 @@ public class SpController {
     }
 
     @RequestMapping("/filieres/structure/update")
-
     @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
-
     public ResponseEntity<String> updateStructure(@RequestParam("file") MultipartFile file, Model model) {
-
         try {
             // Ensure the file is XLSX
             if (!Objects.equals(file.getContentType(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
@@ -286,9 +278,7 @@ public class SpController {
     }
 
     @RequestMapping("/levels/delete/{id}")
-
     @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
-
     public ResponseEntity<String> deleteLevel(@PathVariable int id, Model model) {
 
         Boolean result = levelServices.deleteLevel(id);
@@ -302,9 +292,7 @@ public class SpController {
     }
 
     @RequestMapping("/levels/add")
-
     @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
-
     public ResponseEntity<String> addLevel(@RequestBody LevelDTO newLevel, Model model) {
 
         Boolean result = levelServices.createLevel(newLevel);
@@ -318,9 +306,7 @@ public class SpController {
     }
 
     @RequestMapping("/levels/edit/{id}")
-
     @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
-
     public ResponseEntity<String> editLevel(@PathVariable int id, @RequestBody LevelDTO updatedLevel, Model model) {
 
         Boolean result = levelServices.updateLevel(id, updatedLevel);
@@ -345,9 +331,7 @@ public class SpController {
     }
 
     @RequestMapping("/modules/delete/{id}")
-
     @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
-
     public ResponseEntity<String> deleteModule(@PathVariable int id, Model model) {
 
         Boolean result = moduleServices.deleteModule(id);
@@ -361,9 +345,7 @@ public class SpController {
     }
 
     @RequestMapping("/modules/add")
-
     @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
-
     public ResponseEntity<String> addModule(@RequestBody ModuleDTO newModule, Model model) {
 
         Boolean result = moduleServices.createModule(newModule);
@@ -377,9 +359,7 @@ public class SpController {
     }
 
     @RequestMapping("/modules/edit/{id}")
-
     @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
-
     public ResponseEntity<String> editModule(@PathVariable int id, @RequestBody ModuleDTO updatedModule, Model model) {
 
         Boolean result = moduleServices.updateModule(id, updatedModule);
@@ -402,9 +382,7 @@ public class SpController {
     }
 
     @RequestMapping("/elements/delete/{id}")
-
     @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
-
     public ResponseEntity<String> deleteElement(@PathVariable int id, Model model) {
 
         Boolean result = elementServices.deleteElement(id);
@@ -418,10 +396,7 @@ public class SpController {
     }
 
     @RequestMapping("/elements/add")
-
     @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
-
-
     public ResponseEntity<String> addElement(@RequestBody ElementDTO newElement, Model model) {
 
         Boolean result = elementServices.createElement(newElement);
@@ -435,9 +410,7 @@ public class SpController {
     }
 
     @RequestMapping("/elements/edit/{id}")
-
     @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
-
     public ResponseEntity<String> editElement(@PathVariable int id, @RequestBody ElementDTO updatedElement, Model model) {
 
         Boolean result = elementServices.updateElement(id, updatedElement);

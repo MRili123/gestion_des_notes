@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{AdminUser/layout.html}">
+
+<head>
+    <title layout:fragment="title">users activities - Admin User</title>
+</head>
+<body>
+<span layout:fragment="title">users activities</span>
+
+<div layout:fragment="actual_content" >
+    <div class="row">
+        <div class="col-lg-12 mb-30">
+            <div class="card mt-30">
+                <div class="card-body">
+
+                    <div class="userDatatable adv-table-table global-shadow border-0 bg-white w-100 adv-table">
+                        <div class="table-responsive">
+                            <div class="adv-table-table__header">
+                                <h4>users activities</h4>
+
+                            </div>
+                            <div id="filter-form-container"></div>
+                            <table class="table mb-0 table-borderless adv-table" data-sorting="true" data-filter-container="#filter-form-container" data-paging-current="1" data-paging-position="right" data-paging-size="10">
+                                <thead>
+                                <tr class="userDatatable-header">
+                                    <th>
+                                        <span class="userDatatable-title">Id</span>
+                                    </th>
+                                    <th>
+                                        <span class="userDatatable-title">Action</span>
+                                    </th>
+                                    <th>
+                                        <span class="userDatatable-title">Time</span>
+                                    </th>
+                                    <th>
+                                        <span class="userDatatable-title">User</span>
+                                    </th>
+
+
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="activityuser : ${activityusers}">
+                                    <td>
+                                        <div class="userDatatable-content" th:text="${activityuser.id}">ID</div>
+                                    </td>
+                                    <td>
+                                        <div class="userDatatable-content" th:text="${activityuser.action}">
+                                            action
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="userDatatable-content" th:text="${activityuser.createdAt}">
+                                            createdAt
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <div class="userDatatable-content" th:text="${activityuser.user.username}">
+                                            username
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>
