@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/GestionNote/GestionNote.iml" filepath="$PROJECT_DIR$/GestionNote/GestionNote.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/GestionNote (1).iml" filepath="$PROJECT_DIR$/.idea/GestionNote (1).iml" />
     </modules>
   </component>

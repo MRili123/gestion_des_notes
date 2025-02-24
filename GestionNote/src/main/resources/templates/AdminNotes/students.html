@@ -1,632 +1,269 @@
 <!DOCTYPE html>
-<html
-        xmlns:th="http://www.thymeleaf.org"
-        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-        layout:decorate="~{AdminNotes/layout.html}">
->
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{AdminNotes/layout.html}">
 <head>
   <title layout:fragment="title">Students - Admin Notes</title>
 </head>
 <body>
 <span layout:fragment="title">Students</span>
 
-<div layout:fragment="actual_content" >
+<div layout:fragment="actual_content">
+  <!-- Student Table -->
   <div class="row">
     <div class="col-lg-12 mb-30">
       <div class="card mt-30">
         <div class="card-body">
-
           <div class="userDatatable adv-table-table global-shadow border-0 bg-white w-100 adv-table">
             <div class="table-responsive">
               <div class="adv-table-table__header">
                 <h4>Students</h4>
                 <div class="adv-table-table__button">
-                  <div class="atbd-button-list d-flex flex-wrap">
-                    <button class="btn btn-sm btn-squared btn-transparent-warning" data-toggle="modal" data-target="#update-xlsx-modal">
-                      <span data-feather="upload"></span>
-                      Update from XLSX
-                    </button>
-
-                    <button class="btn btn-sm btn-squared btn-transparent-success" data-toggle="modal" data-target="#add-xlsx-modal">
-                      <span data-feather="upload"></span>
-                      Add from XLSX
-                    </button>
-
-                    <button class="btn btn-success btn-sm btn-squared" data-toggle="modal" data-target="#add-modal">
-                      <span data-feather="plus"></span>
-                      Add New
-                    </button>
-                  </div>
+                  <button class="btn btn-success btn-default btn-squared"
+                          data-toggle="modal"
+                          data-target="#add-modal">
+                    Add New
+                  </button>
                 </div>
               </div>
-              <div id="filter-form-container"></div>
-              <table class="table mb-0 table-borderless adv-table" data-sorting="true" data-filter-container="#filter-form-container" data-paging-current="1" data-paging-position="right" data-paging-size="10">
+              <table class="table mb-0 table-borderless adv-table">
                 <thead>
                 <tr class="userDatatable-header">
-                  <th>
-                    <span class="userDatatable-title">id</span>
-                  </th>
-                  <th>
-                    <span class="userDatatable-title">Cne</span>
-                  </th>
-                  <th>
-                    <span class="userDatatable-title">FirstName</span>
-                  </th>
-                  <th>
-                    <span class="userDatatable-title">lastName</span>
-                  </th>
-                  <th>
-                    <span class="userDatatable-title">CurrentLevelId</span>
-                  </th>
-                  <th>
-                    <span class="userDatatable-title float-right">action</span>
-                  </th>
+                  <th>ID</th>
+                  <th>CNE</th>
+                  <th>First Name</th>
+                  <th>Last Name</th>
+                  <th>Level ID</th>
+                  <th class="text-right">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="filiere : ${filieres}">
-                  <td>
-                    <div class="userDatatable-content" th:text="${filiere.id}">ID</div>
-                  </td>
-                  <td>
-                    <div class="userDatatable-content" th:text="${filiere.title}">
-                      CNE
-                    </div>
-                  </td>
-                  <td>
-                    <div class="userDatatable-content" th:text="${filiere.alias}">
-                      FisrtName
-                    </div>
-                  </td>
-                  <td>
-                    <div class="userDatatable-content" th:text="${filiere.coordinator.firstName} + ' ' + ${filiere.coordinator.lastName}">
-                      LastName
-                    </div>
-                  </td>
+                <tr th:each="student : ${students}">
+                  <td th:text="${student.id}"></td>
+                  <td th:text="${student.cne}"></td>
+                  <td th:text="${student.firstName}"></td>
+                  <td th:text="${student.lastName}"></td>
+                  <td th:text="${student.currentLevelId}"></td>
                   <td>
                     <ul class="orderDatatable_actions mb-0 d-flex flex-wrap">
                       <li>
-                        <a href="#" class="view" id="download-structure" th:attr="data-id=${filiere.id}">
-                          <span data-feather="download"></span>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#" class="edit" data-toggle="modal" data-target="#edit-modal"
-                           th:attr="data-id=${filiere.id}, data-alias=${filiere.alias}, data-title=${filiere.title},
-                                                        data-accreditationstart=${filiere.accreditationStart},
-                                                        data-accreditationend=${filiere.accreditationEnd},
-                                                        data-coordinator=${filiere.coordinator.id}">
+                        <a href="#" class="edit"
+                           data-toggle="modal"
+                           data-target="#edit-modal"
+                           th:data-id="${student.id}"
+                           th:data-firstname="${student.firstName}"
+                           th:data-lastname="${student.lastName}"
+                           th:data-cne="${student.cne}"
+                           th:data-currentlevelid="${student.currentLevelId}">
                           <span data-feather="edit"></span>
                         </a>
                       </li>
                       <li>
-                        <a href="#" class="remove" data-toggle="modal" data-target="#modal-delete-confirm" th:attr="data-id=${filiere.id}" >
+                        <a href="#" class="remove"
+                           data-toggle="modal"
+                           data-target="#modal-delete-confirm"
+                           th:data-id="${student.id}">
                           <span data-feather="trash-2"></span>
                         </a>
                       </li>
                     </ul>
                   </td>
-
                 </tr>
-
                 </tbody>
               </table>
             </div>
           </div>
-
         </div>
       </div>
     </div>
   </div>
 
-  <!--  MODAL DELETE CONFIRM-->
-  <div class="modal-basic modal fade show" id="modal-delete-confirm" tabindex="-1" role="dialog" aria-hidden="true">
-
-    <div class="modal-dialog modal-sm modal-info" role="document">
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-basic modal fade" id="modal-delete-confirm" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm modal-info">
       <div class="modal-content">
         <div class="modal-body">
           <div class="modal-info-body d-flex">
             <div class="modal-info-icon danger">
               <span data-feather="x-circle"></span>
             </div>
-
             <div class="modal-info-text">
-              <h6>Do you want to delete this filiere?</h6>
-              <p>
-                Deleting this filiere won't remove it completely from the database, this will just mark it as deleted to ensure data integrity.
-              </p>
+              <h6>Delete Student?</h6>
+              <p>This will mark the student as deleted while preserving data integrity.</p>
             </div>
-
           </div>
         </div>
         <div class="modal-footer">
-
           <button type="button" class="btn btn-light btn-outlined btn-sm" data-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-danger btn-sm" id="confirm-delete" data-dismiss="modal">Ok</button>
-
+          <button type="button" class="btn btn-danger btn-sm" id="confirm-delete">Confirm</button>
         </div>
       </div>
     </div>
   </div>
-  <!--  MODAL DELETE CONFIRM-->
 
-  <!-- MODAL EDIT CONFIRM -->
-  <div class="modal-basic modal fade show" id="edit-modal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-md" role="document">
-      <div class="modal-content modal-bg-white ">
+  <!-- Edit Student Modal -->
+  <div class="modal-basic modal fade" id="edit-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-md">
+      <div class="modal-content modal-bg-white">
         <div class="modal-header">
-          <h6 class="modal-title">Edit</h6>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span data-feather="x"></span></button>
+          <h6 class="modal-title">Edit Student</h6>
+          <button type="button" class="close" data-dismiss="modal">
+            <span data-feather="x"></span>
+          </button>
         </div>
         <div class="modal-body">
-          <div class="horizontal-form">
-            <form action="#">
-              <div class="form-group row mb-25">
-                <div class="col-sm-3 d-flex aling-items-center">
-                  <label for="inputTitleEdit" class=" col-form-label color-dark fs-14 fw-500 align-center">
-                    CNE
-                  </label>
-                </div>
-                <div class="col-sm-9">
-                  <input type="text" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="inputTitleEdit">
-                </div>
+          <form>
+            <div class="form-group row mb-25">
+              <label class="col-sm-3 col-form-label">First Name</label>
+              <div class="col-sm-9">
+                <input type="text" class="form-control" id="editFirstName">
               </div>
-              <div class="form-group row mb-25">
-                <div class="col-sm-3 d-flex aling-items-center">
-                  <label for="inputAliasEdit" class=" col-form-label color-dark fs-14 fw-500 align-center">
-                    FirstName
-                  </label>
-                </div>
-                <div class="col-sm-9">
-                  <input type="text" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="inputAliasEdit">
-                </div>
+            </div>
+            <div class="form-group row mb-25">
+              <label class="col-sm-3 col-form-label">Last Name</label>
+              <div class="col-sm-9">
+                <input type="text" class="form-control" id="editLastName">
               </div>
-              <div class="form-group row mb-25">
-                <div class="col-sm-3 d-flex aling-items-center">
-                  <label for="select-search-edit" class="col-form-label  color-dark fs-14 fw-500 align-center">
-                    LastName
-                  </label>
-                </div>
-                <div class="col-sm-9">
-                  <div class="atbd-select-list">
-                    <div class="atbd-select ">
-                      <select name="select-search-kkkk" id="select-search-edit" class="form-control">
-                        <option th:each="professor : ${professors}"  th:attr="value= ${professor.id}"
-                                th:text="${professor.firstName} + ' ' + ${professor.lastName}"
-                        >
-                          Option
-                        </option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
+            </div>
+            <div class="form-group row mb-25">
+              <label class="col-sm-3 col-form-label">CNE</label>
+              <div class="col-sm-9">
+                <input type="text" class="form-control" id="editCne">
               </div>
-              <div class="form-group row mb-25">
-                <div class="col-sm-3 d-flex aling-items-center">
-                  <label for="inputAccStartEdit" class="col-form-label  color-dark fs-14 fw-500 align-center">
-                    Accreditation Start
-                  </label>
-                </div>
-                <div class="col-sm-9">
-                  <input placeholder="YYYY-MM-DD" type="text" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="inputAccStartEdit">
-                  <p style="color: #d00000; display: none;">
-                    Invalid Date
-                  </p>
-                </div>
+            </div>
+            <div class="form-group row mb-25">
+              <label class="col-sm-3 col-form-label">Level ID</label>
+              <div class="col-sm-9">
+                <input type="number" class="form-control" id="editLevelId">
               </div>
-              <div class="form-group row mb-25">
-                <div class="col-sm-3 d-flex aling-items-center">
-                  <label for="inputAccEndEdit" class="col-form-label  color-dark fs-14 fw-500 align-center">
-                    Accreditation End
-                  </label>
-                </div>
-                <div class="col-sm-9">
-                  <input placeholder="YYYY-MM-DD" type="text" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="inputAccEndEdit">
-                  <p style="color: #d00000; display: none;">
-                    Invalid Date
-                  </p>
-                </div>
-              </div>
-            </form>
-          </div>
+            </div>
+            <input type="hidden" id="studentId">
+          </form>
         </div>
         <div class="modal-footer">
-          <input type="hidden" id="filiereId"> <!-- Used to store prof id -->
-          <button type="button" id="save-changes" class="btn btn-primary btn-sm">Save changes</button>
           <button type="button" class="btn btn-light btn-sm" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary btn-sm" id="save-changes">Save</button>
         </div>
       </div>
     </div>
   </div>
-  <!-- MODAL EDIT CONFIRM -->
 
-  <!-- MODAL ADD CONFIRM -->
-  <div class="modal-basic modal fade show" id="add-modal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-md" role="document">
-      <div class="modal-content modal-bg-white ">
+  <!-- Add Student Modal -->
+  <div class="modal-basic modal fade" id="add-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-md">
+      <div class="modal-content modal-bg-white">
         <div class="modal-header">
-          <h6 class="modal-title">Add new</h6>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span data-feather="x"></span></button>
+          <h6 class="modal-title">Add Student</h6>
+          <button type="button" class="close" data-dismiss="modal">
+            <span data-feather="x"></span>
+          </button>
         </div>
         <div class="modal-body">
-          <div class="horizontal-form">
-            <form action="#">
-              <div class="form-group row mb-25">
-                <div class="col-sm-3 d-flex aling-items-center">
-                  <label for="inputTitleAdd" class=" col-form-label color-dark fs-14 fw-500 align-center">
-                    Title
-                  </label>
-                </div>
-                <div class="col-sm-9">
-                  <input type="text" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="inputTitleAdd">
-                </div>
+          <form>
+            <div class="form-group row mb-25">
+              <label class="col-sm-3 col-form-label">First Name</label>
+              <div class="col-sm-9">
+                <input type="text" class="form-control" id="addFirstName">
               </div>
-              <div class="form-group row mb-25">
-                <div class="col-sm-3 d-flex aling-items-center">
-                  <label for="inputAliasAdd" class=" col-form-label color-dark fs-14 fw-500 align-center">
-                    Alias
-                  </label>
-                </div>
-                <div class="col-sm-9">
-                  <input type="text" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="inputAliasAdd">
-                </div>
+            </div>
+            <div class="form-group row mb-25">
+              <label class="col-sm-3 col-form-label">Last Name</label>
+              <div class="col-sm-9">
+                <input type="text" class="form-control" id="addLastName">
               </div>
-              <div class="form-group row mb-25">
-                <div class="col-sm-3 d-flex aling-items-center">
-                  <label for="select-search-add" class="col-form-label  color-dark fs-14 fw-500 align-center">
-                    Coordinator
-                  </label>
-                </div>
-                <div class="col-sm-9">
-                  <div class="atbd-select-list">
-                    <div class="atbd-select">
-                      <select name="select-search-kkkk" id="select-search-add" class="form-control">
-                        <option th:each="professor : ${professors}"  th:attr="value= ${professor.id}"
-                                th:text="${professor.firstName} + ' ' + ${professor.lastName}">
-                          Option
-                        </option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
+            </div>
+            <div class="form-group row mb-25">
+              <label class="col-sm-3 col-form-label">CNE</label>
+              <div class="col-sm-9">
+                <input type="text" class="form-control" id="addCne">
               </div>
-              <div class="form-group row mb-25">
-                <div class="col-sm-3 d-flex aling-items-center">
-                  <label for="inputAccStartAdd" class="col-form-label  color-dark fs-14 fw-500 align-center">
-                    Accreditation Start
-                  </label>
-                </div>
-                <div class="col-sm-9">
-                  <input placeholder="YYYY-MM-DD" type="text" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="inputAccStartAdd">
-                  <p style="color: #d00000; display: none;">
-                    Invalid Date
-                  </p>
-                </div>
+            </div>
+            <div class="form-group row mb-25">
+              <label class="col-sm-3 col-form-label">Level ID</label>
+              <div class="col-sm-9">
+                <input type="number" class="form-control" id="addLevelId">
               </div>
-              <div class="form-group row mb-25">
-                <div class="col-sm-3 d-flex aling-items-center">
-                  <label for="inputAccEndAdd" class="col-form-label  color-dark fs-14 fw-500 align-center">
-                    Accreditation End
-                  </label>
-                </div>
-                <div class="col-sm-9">
-                  <input placeholder="YYYY-MM-DD" type="text" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="inputAccEndAdd">
-                  <p style="color: #d00000; display: none;">
-                    Invalid Date
-                  </p>
-                </div>
-              </div>
-            </form>
-          </div>
+            </div>
+          </form>
         </div>
         <div class="modal-footer">
-          <button type="button" id="save-add" class="btn btn-primary btn-sm">Save changes</button>
           <button type="button" class="btn btn-light btn-sm" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary btn-sm" id="save-add">Save</button>
         </div>
       </div>
     </div>
   </div>
-  <!-- MODAL ADD CONFIRM -->
-
-  <!-- MODAL ADD XLSX -->
-  <div class="modal-basic modal fade show" id="add-xlsx-modal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-md" role="document">
-      <div class="modal-content modal-bg-white ">
-        <div class="modal-header">
-          <h6 class="modal-title">Import strcuture from EXCEL file</h6>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span data-feather="x"></span></button>
-        </div>
-        <div class="modal-body">
-          <p>Please download the template file, fill it with the data you want to import, and then upload it here. Do not change the structure of the file.</p>
-          <a th:href="@{/AdminSp/filieres/template/download}">
-            <button class="btn btn-outline-info btn-rounded btn-sm">
-              <span data-feather="file"></span>
-              Download Template
-            </button>
-          </a>
-          <div class="atbd-upload">
-            <div class="atbd-upload-avatar media-import">
-              <span data-feather="upload"></span>
-              <p class="color-dark fs-20">Drop File or <a href="#">Browse</a></p>
-            </div>
-            <div class="avatar-up">
-              <input type="file" class="upload-avatar-input" id="upload-area-add">
-            </div>
-            <div id="file-name-display-add" class="color-danger fs-16">No file selected</div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" id="submit-add-file" class="btn btn-primary btn-sm">Submit</button>
-          <button type="button" class="btn btn-light btn-sm" data-dismiss="modal">Cancel</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- MODAL ADD XLSX -->
-
-  <!-- MODAL UPDATE XLSX -->
-  <div class="modal-basic modal fade show" id="update-xlsx-modal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-md" role="document">
-      <div class="modal-content modal-bg-white ">
-        <div class="modal-header">
-          <h6 class="modal-title">Update using an XLSX File</h6>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span data-feather="x"></span></button>
-        </div>
-        <div class="modal-body">
-          <p>Please download the structure file containing all the details from the table, update it with the new data, and then upload it here. Do not change the structure of the file.</p>
-          <div class="atbd-upload">
-            <div class="atbd-upload-avatar media-import">
-              <span data-feather="upload"></span>
-              <p class="color-dark fs-20"><a href="#">Click To Browser</a></p>
-            </div>
-            <div class="avatar-up">
-              <input type="file" class="upload-avatar-input" id="upload-area-update">
-            </div>
-            <div id="file-name-display-update" class="color-danger fs-16">No file selected</div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" id="submit-update-file" class="btn btn-primary btn-sm">Submit</button>
-          <button type="button" class="btn btn-light btn-sm" data-dismiss="modal">Cancel</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- MODAL UPDATE XLSX -->
-
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <!-- Script to handle the EDIT request -->
   <script>
-    $(document).on("click", ".edit", function () {
-      // Get filiere data from the clicked edit icon
-      const filiereId = $(this).data("id");
-      const title = $(this).data("title");
-      const alias = $(this).data("alias");
-      const accreditationStart = $(this).data("accreditationstart");
-      const accreditationEnd = $(this).data("accreditationend");
-      const coordinator = $(this).data("coordinator");
+    // Delete Handling
+    let studentIdToDelete = null;
 
-      // Pre-fill the modal form fields
-      $("#inputTitleEdit").val(title);
-      $("#inputAliasEdit").val(alias);
-      $("#inputAccStartEdit").val(accreditationStart);
-      $("#inputAccEndEdit").val(accreditationEnd);
-      $("#select-search-edit").val(coordinator);
-
-      $("#filiereId").val(filiereId); // Store the filiere ID in the hidden input field
-
+    $(document).on("click", ".remove", function() {
+      studentIdToDelete = $(this).data('id');
     });
 
-    $(document).on("click", "#save-changes", function () {
-      // Get the updated data from the form
-      const filiereId = $("#filiereId").val();
-      const updatedData = {
-        title: $("#inputTitleEdit").val(),
-        alias: $("#inputAliasEdit").val(),
-        coordinator: {
-          id: $("#select-search-edit").val()
-        },
-        accreditationStart: new Date($("#inputAccStartEdit").val()).toISOString(),
-        accreditationEnd: new Date($("#inputAccEndEdit").val()).toISOString()
-      };
-
-      // Send the updated data to the server using AJAX
-      $.ajax({
-        url: `/AdminSp/filieres/edit/` + filiereId, // URL for the update request
-        type: "PUT",
-        contentType: "application/json",
-        data: JSON.stringify(updatedData),
-        success: function (response) {
-          alert(response);
-          location.reload(); // Reload the page to see the updated data
-        },
-        error: function (error) {
-          alert(error);
-        }
-      });
-    });
-  </script>
-  <!-- Script to handle the DELETE request -->
-  <script>
-    let filiereIdToDelete = null;
-    // When the trash icon is clicked, store the filiere ID
-    $(document).on("click", ".remove", function () {
-      filiereIdToDelete = $(this).data("id"); // Get the filiere ID from the data-id attribute
-    });
-
-    // When the "Ok" button in the modal is clicked, send the DELETE request
-    $(document).on("click", "#confirm-delete", function () {
-      if (filiereIdToDelete) {
+    $('#confirm-delete').click(function() {
+      if (studentIdToDelete) {
         $.ajax({
-          url:  '/AdminSp/filieres/delete/' + filiereIdToDelete, // URL for the DELETE request
-          type: "DELETE",
-          success: function (response) {
-            // Handle success (e.g., remove the row from the table)
-            alert(response);
-            $(`a[data-id="${filiereIdToDelete}"]`).closest("tr").remove(); // Remove the row from the table
-          },
-          error: function (error) {
-            // Handle error
-            alert(error);
+          url: `/AdminNotes/students/delete/${studentIdToDelete}`,
+          type: 'DELETE',
+          success: function() {
+            location.reload();
           }
         });
       }
     });
-  </script>
-  <!-- Script to handle the ADD request -->
-  <script>
-    $(document).on("click", "#save-add", function () {
-      if(!isValidDate($("#inputAccStartAdd").val()) || !isValidDate($("#inputAccEndAdd").val())) {
-        alert("Invalid date format.");
-        return;
-      }
-      // Get the data from the form
-      const newFiliere = {
-        title: $("#inputTitleAdd").val(),
-        alias: $("#inputAliasAdd").val(),
-        coordinator: {
-          id: $("#select-search-add").val()
-        },
-        accreditationStart: new Date($("#inputAccStartAdd").val()).toISOString(),
-        accreditationEnd: new Date($("#inputAccEndAdd").val()).toISOString()
+
+    // Edit Handling
+    $(document).on("click", ".edit", function() {
+      const studentId = $(this).data('id');
+      $('#studentId').val(studentId);
+      $('#editFirstName').val($(this).data('firstname'));
+      $('#editLastName').val($(this).data('lastname'));
+      $('#editCne').val($(this).data('cne'));
+      $('#editLevelId').val($(this).data('currentlevelid'));
+    });
+
+    $('#save-changes').click(function() {
+      const studentData = {
+        firstName: $('#editFirstName').val(),
+        lastName: $('#editLastName').val(),
+        cne: $('#editCne').val(),
+        currentLevelId: $('#editLevelId').val()
       };
 
-      // Send the data to the server using AJAX
       $.ajax({
-        url: '/AdminSp/filieres/add', // URL for the add request
-        type: "POST",
-        contentType: "application/json",
-        data: JSON.stringify(newFiliere),
-        success: function (response) {
-          alert(response);
-          location.reload(); // Reload the page to see the new data
-        },
-        error: function (error) {
-          alert(error);
+        url: '/AdminNotes/students/update/' + $('#studentId').val(),
+        type: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify(studentData),
+        success: function() {
+          location.reload();
+        }
+      });
+    });
+
+    // Add Handling
+    $('#save-add').click(function() {
+      const newStudent = {
+        firstName: $('#addFirstName').val(),
+        lastName: $('#addLastName').val(),
+        cne: $('#addCne').val(),
+        currentLevelId: $('#addLevelId').val()
+      };
+
+      $.ajax({
+        url: '/AdminNotes/students/add',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(newStudent),
+        success: function() {
+          location.reload();
         }
       });
     });
   </script>
-  <!-- Script to format the date input field -->
-  <script>
-    // Function to check if a date is valid
-    function isValidDate(dateString) {
-      const date = new Date(dateString);
-      return !isNaN(date.getTime());
-    }
-    // Format the input field for the accreditation start date
-    const elemnts = document.querySelectorAll("#inputAccStartAdd, #inputAccStartEdit, #inputAccEndAdd, #inputAccEndEdit");
-    elemnts.forEach (el => el.addEventListener("input", function (event) {
-      let value = event.target.value.replace(/[^0-9]/g, ""); // Remove non-numeric characters
-
-      if (value.length >= 4) {
-        value = value.substring(0, 4) + "-" + value.substring(4);
-      }
-      if (value.length >= 7) {
-        value = value.substring(0, 7) + "-" + value.substring(7);
-      }
-      event.target.value = value.substring(0, 10); // Limit to YYYY-MM-DD format
-
-      // Validate the date
-      if (!isValidDate(event.target.value)) {
-        event.target.nextElementSibling.style.display = "block"; // Show the error message
-      } else {
-        event.target.nextElementSibling.style.display = "none"; // Hide the error message
-      }
-    }));
-
-  </script>
-  <!-- Script to handle the file upload for adding -->
-  <script>
-    document.querySelector('#upload-area-add').addEventListener('change', function(event) {
-      const fileName = event.target.files[0] ? event.target.files[0].name : 'No file selected';
-      document.getElementById('file-name-display-add').textContent = fileName;
-      document.getElementById('file-name-display-add').className = 'color-success fs-16';
-    });
-
-    $(document).on("click", "#submit-add-file", function () {
-      const file = $("#upload-area-add")[0].files[0];
-      if (!file) {
-        alert("Please select a file to upload.");
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append("file", file);
-
-      $.ajax({
-        url: '/AdminSp/filieres/structure/upload', // URL for the file upload request
-        type: "POST",
-        data: formData,
-        contentType: false,
-        processData: false,
-        success: function (response) {
-          alert(response);
-          location.reload(); // Reload the page to see the new data
-        },
-        error: function (error) {
-          alert(error.responseText);
-        }
-      });
-    });
-  </script>
-  <!-- Script to handle the structure download -->
-  <script>
-    $(document).on("click", "#download-structure", function () {
-      const filiereId = $(this).data("id");
-      window.location.href = '/AdminSp/filieres/structure/download/' + filiereId;
-      // $.ajax({
-      //     url: '/AdminSp/filieres/structure/download/' + filiereId, // URL for the structure download request
-      //     type: "GET",
-      //     contentType: false,
-      //     processData: false,
-      //     error: function (error) {
-      //         alert(error.responseText);
-      //     }
-      // });
-    });
-  </script>
-  <!-- Script to handle the file upload for updating -->
-  <script>
-    document.querySelector('#upload-area-update').addEventListener('change', function(event) {
-      const fileName = event.target.files[0] ? event.target.files[0].name : 'No file selected';
-      document.getElementById('file-name-display-update').textContent = fileName;
-      document.getElementById('file-name-display-update').className = 'color-success fs-16';
-    });
-
-    $(document).on("click", "#submit-update-file", function () {
-      const file = $("#upload-area-update")[0].files[0];
-      if (!file) {
-        alert("Please select a file to upload.");
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append("file", file);
-
-      $.ajax({
-        url: '/AdminSp/filieres/structure/update', // URL for the file upload request
-        type: "PUT",
-        data: formData,
-        contentType: false,
-        processData: false,
-        success: function (response) {
-          alert(response);
-          location.reload(); // Reload the page to see the new data
-        },
-        error: function (error) {
-          alert(error.responseText);
-        }
-      });
-    });
-  </script>
-
 </div>
-
 </body>
 </html>
