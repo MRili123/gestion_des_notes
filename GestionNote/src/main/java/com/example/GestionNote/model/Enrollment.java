@@ -17,8 +17,18 @@ public class Enrollment {
     private String academicYear;
     private String result;
     private String resultFromSession;
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt;
+
+    // constructors
+    public Enrollment() {
+    }
+
+    public Enrollment(String academicYear, Student student, Module module) {
+        this.academicYear = academicYear;
+        this.student = student;
+        this.module = module;
+    }
 
     // Relationships
     @ManyToOne(fetch = FetchType.LAZY)
