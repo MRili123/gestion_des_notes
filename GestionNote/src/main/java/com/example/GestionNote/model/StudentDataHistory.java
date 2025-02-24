@@ -1,19 +1,36 @@
 package com.example.GestionNote.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "students_data_history")
 public class StudentDataHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String modifiedField;
-    private String oldValue;
-    private String newValue;
-    private LocalDateTime createdAt;
+    private String cne;
+    private String firstName;
+    private String lastName;
+    private LocalDateTime updatedAt = LocalDateTime.now();
+
+    // constructors
+    public StudentDataHistory() {
+    }
+
+    public StudentDataHistory(String cne, String firstName, String lastName, User admin, Student student, Level currentLevel) {
+        this.cne = cne;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.user = admin;
+        this.student = student;
+        this.currentLevel = currentLevel;
+    }
 
     // Relationships
     @ManyToOne(fetch = FetchType.LAZY)
@@ -24,59 +41,8 @@ public class StudentDataHistory {
     @JoinColumn(name = "student_id")
     private Student student;
 
-    public Integer getId() {
-        return id;
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "current_level_id")
+    private Level currentLevel;
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getModifiedField() {
-        return modifiedField;
-    }
-
-    public void setModifiedField(String modifiedField) {
-        this.modifiedField = modifiedField;
-    }
-
-    public String getOldValue() {
-        return oldValue;
-    }
-
-    public void setOldValue(String oldValue) {
-        this.oldValue = oldValue;
-    }
-
-    public String getNewValue() {
-        return newValue;
-    }
-
-    public void setNewValue(String newValue) {
-        this.newValue = newValue;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Student getStudent() {
-        return student;
-    }
-
-    public void setStudent(Student student) {
-        this.student = student;
-    }
 }

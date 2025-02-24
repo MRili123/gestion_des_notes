@@ -29,6 +29,7 @@ import java.util.Objects;
 
 @Service
 public class ModuleServices {
+    @Lazy
     @Autowired
     private ModuleRepository moduleRepository;
     @Autowired
@@ -37,6 +38,7 @@ public class ModuleServices {
     private ProfessorServices professorServices;
     @Autowired
     private EnrollmentServices enrollmentServices;
+    @Lazy
     @Autowired
     private StudentServices studentServices;
     @Lazy
@@ -47,6 +49,10 @@ public class ModuleServices {
 
     public List<Module> getAllModules(){
         return moduleRepository.findAllByDeleted(false);
+    }
+
+    public List<Module> getModulesByLevelId(int levelId){
+        return moduleRepository.findAllByLevelIdAndDeleted(levelId, false);
     }
 
     public Module getModuleById(int id){

@@ -19,8 +19,19 @@ public class Student {
     private String cne;
     private String firstName;
     private String lastName;
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
     private boolean deleted = false;
+
+    // constrcuters
+    public Student() {
+    }
+
+    public Student(String cne, String firstName, String lastName, Level currentLevel) {
+        this.cne = cne;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.currentLevel = currentLevel;
+    }
 
     // Relationships
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -38,5 +49,4 @@ public class Student {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "current_level_id")
     private Level currentLevel;
-
 }

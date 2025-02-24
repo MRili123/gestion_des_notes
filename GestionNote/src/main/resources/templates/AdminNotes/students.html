@@ -19,11 +19,19 @@
               <div class="adv-table-table__header">
                 <h4>Students</h4>
                 <div class="adv-table-table__button">
-                  <button class="btn btn-success btn-default btn-squared"
-                          data-toggle="modal"
-                          data-target="#add-modal">
-                    Add New
-                  </button>
+                  <div class="atbd-button-list d-flex flex-wrap">
+
+                    <button class="btn btn-sm btn-squared btn-transparent-success" data-toggle="modal" data-target="#add-xlsx-modal">
+                      <span data-feather="upload"></span>
+                      Add from XLSX
+                    </button>
+                    <button class="btn btn-success btn-default btn-squared"
+                            data-toggle="modal"
+                            data-target="#add-modal">
+                      Add New
+                    </button>
+
+                  </div>
                 </div>
               </div>
               <table class="table mb-0 table-borderless adv-table">
@@ -162,6 +170,43 @@
     </div>
   </div>
 
+  <!-- MODAL ADD XLSX -->
+  <div class="modal-basic modal fade show" id="add-xlsx-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-md" role="document">
+      <div class="modal-content modal-bg-white ">
+        <div class="modal-header">
+          <h6 class="modal-title">Import strcuture from EXCEL file</h6>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span data-feather="x"></span></button>
+        </div>
+        <div class="modal-body">
+          <p>Please download the template file, fill it with the data you want to import, and then upload it here. Do not change the structure of the file.</p>
+          <a th:href="@{/AdminNotes/students/structure/download}">
+            <button class="btn btn-outline-info btn-rounded btn-sm">
+              <span data-feather="file"></span>
+              Download Template
+            </button>
+          </a>
+          <div class="atbd-upload">
+            <div class="atbd-upload-avatar media-import">
+              <span data-feather="upload"></span>
+              <p class="color-dark fs-20">Drop File or <a href="#">Browse</a></p>
+            </div>
+            <div class="avatar-up">
+              <input type="file" class="upload-avatar-input" id="upload-area-add">
+            </div>
+            <div id="file-name-display-add" class="color-danger fs-16">No file selected</div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="submit-add-file" class="btn btn-primary btn-sm">Submit</button>
+          <button type="button" class="btn btn-light btn-sm" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- MODAL ADD XLSX -->
+
   <!-- Add Student Modal -->
   <div class="modal-basic modal fade" id="add-modal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-md">
@@ -288,6 +333,42 @@
         data: JSON.stringify(newStudent),
         success: function() {
           location.reload();
+        }
+      });
+    });
+  </script>
+  <!-- Script to handle the file upload for adding -->
+  <script>
+    document.querySelector('#upload-area-add').addEventListener('change', function(event) {
+      const fileName = event.target.files[0] ? event.target.files[0].name : 'No file selected';
+      document.getElementById('file-name-display-add').textContent = fileName;
+      document.getElementById('file-name-display-add').className = 'color-success fs-16';
+    });
+
+    $(document).on("click", "#submit-add-file", function () {
+      const file = $("#upload-area-add")[0].files[0];
+      if (!file) {
+        alert("Please select a file to upload.");
+        return;
+      }
+
+      console.log($("#upload-area-add")[0]);
+
+      const formData = new FormData();
+      formData.append("studentsFile", file);
+
+      $.ajax({
+        url: '/AdminNotes/students/structure/upload', // URL for the file upload request
+        type: "POST",
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function (response) {
+          alert(response);
+          location.reload(); // Reload the page to see the new data
+        },
+        error: function (error) {
+          alert(error.responseText);
         }
       });
     });

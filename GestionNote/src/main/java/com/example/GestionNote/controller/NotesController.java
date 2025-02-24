@@ -89,10 +89,11 @@ public class NotesController {
     @RequestMapping("/students/edit/{id}")
     @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
     public ResponseEntity<String> editProfessor(@PathVariable int id, @RequestBody StudentDTO updatedStudent, Model model) {
-        Boolean result = studentServices.updateStudent(id, updatedStudent);
+        User admin = (User) model.getAttribute("user");
+        Boolean result = studentServices.updateStudent(id, updatedStudent, admin);
         if(result) {
             // LOG ACTIVITY
-            Integer userId = ((User) model.getAttribute("user")).getId();
+            Integer userId = admin.getId();
             activityLogService.save("Updated student with ID: " + id, userId);
         }
         return ResponseEntity.ok("Student updated successfully");
@@ -109,6 +110,59 @@ public class NotesController {
             return ResponseEntity.ok("student added successfully");
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while adding the student");
+    }
+
+    @RequestMapping("/students/structure/download")
+    @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
+    public ResponseEntity<byte[]> downloadStudentsStructure(Model model) {
+        try {
+            byte[] studentsFile = studentServices.downloadStudentsStructureFile();
+            if (studentsFile == null) return ResponseEntity.notFound().build();
+
+            String fileName = "students_structure.xlsx";
+
+            // Set the headers and return the response
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentDispositionFormData("attachment", fileName);
+
+            // LOG ACTIVITY
+            Integer userId = ((User) model.getAttribute("user")).getId();
+            activityLogService.save("Downloaded students structure EXCEL file", userId);
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(studentsFile);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @RequestMapping("/students/structure/upload")
+    @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
+    public ResponseEntity<String> uploadStudentsStructure(MultipartFile studentsFile, Model model) {
+        try {
+            // Ensure the file is XLSX
+            if (!Objects.equals(studentsFile.getContentType(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid file type, please upload an XLSX file");
+            }
+            // convert the file to bytes
+            byte[] byteArrayFile = studentsFile.getBytes();
+
+            String result = studentServices.uploadStudentsStructureFile(byteArrayFile);
+
+            // LOG ACTIVITY
+            Integer userId = ((User) model.getAttribute("user")).getId();
+            activityLogService.save(result, userId);
+
+            return ResponseEntity.ok(result);
+        }
+        catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     @RequestMapping("/grades")

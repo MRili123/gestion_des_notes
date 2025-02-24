@@ -35,6 +35,14 @@ public class EnrollmentServices {
         return enrollmentRepository.getEnrollmentsByModuleIdAndAcademicYear(moduleId, academicYear);
     }
 
+    public Enrollment getEnrollmentsToDeleteForUpdate(int moduleId, int studentId, String academicYear) {
+        return enrollmentRepository.getEnrollmentByModuleIdAndStudentIdAndAcademicYearAndResultAndResultFromSession(moduleId, studentId, academicYear, null, null);
+    }
+
+    public void deleteEnrollment(Enrollment enrollment) {
+        enrollmentRepository.delete(enrollment);
+    }
+
     public List<String> getAcademicYears(){
         List<Enrollment> enrollments = enrollmentRepository.findAll();
         List<String> academicYears = new ArrayList<>(List.of());
