@@ -31,10 +31,7 @@ public class NotesController {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private com.example.GestionNote.service.studentsServices studentsServices;
-    @Autowired
     private ActivityLogService activityLogService;
-
     @Autowired
     private ModuleServices moduleServices;
     @Autowired
@@ -71,8 +68,47 @@ public class NotesController {
     @RequestMapping("/students")
     public String students(Model model) {
         List<Student> students = studentServices.getStudents();
-        model.addAttribute("professors", students);
+        model.addAttribute("students", students);
+        List<Level> levels = levelServices.getAllLevels();
+        model.addAttribute("levels", levels);
         return "AdminNotes/students";
+    }
+
+    @RequestMapping("/students/delete/{id}")
+    @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
+    public ResponseEntity<String> deleteProfessor(@PathVariable int id, Model model) {
+        Boolean result = studentServices.deleteStudent(id);
+        if(result) {
+            // LOG ACTIVITY
+            Integer userId = ((User) model.getAttribute("user")).getId();
+            activityLogService.save("Deleted student with ID: " + id, userId);
+        }
+        return ResponseEntity.ok("Student deleted successfully");
+    }
+
+    @RequestMapping("/students/edit/{id}")
+    @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
+    public ResponseEntity<String> editProfessor(@PathVariable int id, @RequestBody StudentDTO updatedStudent, Model model) {
+        Boolean result = studentServices.updateStudent(id, updatedStudent);
+        if(result) {
+            // LOG ACTIVITY
+            Integer userId = ((User) model.getAttribute("user")).getId();
+            activityLogService.save("Updated student with ID: " + id, userId);
+        }
+        return ResponseEntity.ok("Student updated successfully");
+    }
+
+    @PostMapping("/students/add")
+    @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
+    public ResponseEntity<String> addStudent(@RequestBody StudentDTO newStudent, Model model) {
+        Boolean result = studentServices.createStudent(newStudent);
+        if(result) {
+            // LOG ACTIVITY
+            Integer userId = ((User) model.getAttribute("user")).getId();
+            activityLogService.save("Added new student", userId);
+            return ResponseEntity.ok("student added successfully");
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while adding the student");
     }
 
     @RequestMapping("/grades")

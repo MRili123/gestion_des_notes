@@ -33,7 +33,7 @@
                   <th>CNE</th>
                   <th>First Name</th>
                   <th>Last Name</th>
-                  <th>Level ID</th>
+                  <th>Level</th>
                   <th class="text-right">Actions</th>
                 </tr>
                 </thead>
@@ -43,7 +43,7 @@
                   <td th:text="${student.cne}"></td>
                   <td th:text="${student.firstName}"></td>
                   <td th:text="${student.lastName}"></td>
-                  <td th:text="${student.currentLevelId}"></td>
+                  <td th:text="${student.currentLevel.title}"></td>
                   <td>
                     <ul class="orderDatatable_actions mb-0 d-flex flex-wrap">
                       <li>
@@ -54,7 +54,7 @@
                            th:data-firstname="${student.firstName}"
                            th:data-lastname="${student.lastName}"
                            th:data-cne="${student.cne}"
-                           th:data-currentlevelid="${student.currentLevelId}">
+                           th:data-currentlevelid="${student.currentLevel.id}">
                           <span data-feather="edit"></span>
                         </a>
                       </li>
@@ -132,9 +132,23 @@
               </div>
             </div>
             <div class="form-group row mb-25">
-              <label class="col-sm-3 col-form-label">Level ID</label>
+              <div class="col-sm-3 d-flex aling-items-center">
+                <label for="select-search-edit" class="col-form-label  color-dark fs-14 fw-500 align-center">
+                  Level
+                </label>
+              </div>
               <div class="col-sm-9">
-                <input type="number" class="form-control" id="editLevelId">
+                <div class="atbd-select-list">
+                  <div class="atbd-select ">
+                    <select name="select-search-kkkk" id="select-search-edit" class="form-control">
+                      <option th:each="level : ${levels}"  th:attr="value= ${level.id}"
+                              th:text="${level.title}"
+                      >
+                        Option
+                      </option>
+                    </select>
+                  </div>
+                </div>
               </div>
             </div>
             <input type="hidden" id="studentId">
@@ -179,9 +193,23 @@
               </div>
             </div>
             <div class="form-group row mb-25">
-              <label class="col-sm-3 col-form-label">Level ID</label>
+              <div class="col-sm-3 d-flex aling-items-center">
+                <label for="select-search-add" class="col-form-label  color-dark fs-14 fw-500 align-center">
+                  Level
+                </label>
+              </div>
               <div class="col-sm-9">
-                <input type="number" class="form-control" id="addLevelId">
+                <div class="atbd-select-list">
+                  <div class="atbd-select ">
+                    <select name="select-search-kkkk" id="select-search-add" class="form-control">
+                      <option th:each="level : ${levels}"  th:attr="value= ${level.id}"
+                              th:text="${level.title}"
+                      >
+                        Option
+                      </option>
+                    </select>
+                  </div>
+                </div>
               </div>
             </div>
           </form>
@@ -222,7 +250,7 @@
       $('#editFirstName').val($(this).data('firstname'));
       $('#editLastName').val($(this).data('lastname'));
       $('#editCne').val($(this).data('cne'));
-      $('#editLevelId').val($(this).data('currentlevelid'));
+      $('#select-search-edit').val($(this).data('currentlevelid'));
     });
 
     $('#save-changes').click(function() {
@@ -230,11 +258,11 @@
         firstName: $('#editFirstName').val(),
         lastName: $('#editLastName').val(),
         cne: $('#editCne').val(),
-        currentLevelId: $('#editLevelId').val()
+        currentLevelId: $('#select-search-edit').val()
       };
 
       $.ajax({
-        url: '/AdminNotes/students/update/' + $('#studentId').val(),
+        url: '/AdminNotes/students/edit/' + $('#studentId').val(),
         type: 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(studentData),
@@ -250,7 +278,7 @@
         firstName: $('#addFirstName').val(),
         lastName: $('#addLastName').val(),
         cne: $('#addCne').val(),
-        currentLevelId: $('#addLevelId').val()
+        currentLevelId: $('#select-search-add').val()
       };
 
       $.ajax({
