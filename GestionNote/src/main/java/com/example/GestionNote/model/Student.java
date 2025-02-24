@@ -1,10 +1,14 @@
 package com.example.GestionNote.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "students")
 public class Student {
@@ -16,6 +20,7 @@ public class Student {
     private String firstName;
     private String lastName;
     private LocalDateTime createdAt;
+    private boolean deleted = false;
 
     // Relationships
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -34,76 +39,4 @@ public class Student {
     @JoinColumn(name = "current_level_id")
     private Level currentLevel;
 
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getCne() {
-        return cne;
-    }
-
-    public void setCne(String cne) {
-        this.cne = cne;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Set<StudentDataHistory> getStudentDataHistories() {
-        return studentDataHistories;
-    }
-
-    public void setStudentDataHistories(Set<StudentDataHistory> studentDataHistories) {
-        this.studentDataHistories = studentDataHistories;
-    }
-
-    public Set<Exam> getExams() {
-        return exams;
-    }
-
-    public void setExams(Set<Exam> exams) {
-        this.exams = exams;
-    }
-
-    public Set<Enrollment> getEnrollments() {
-        return enrollments;
-    }
-
-    public void setEnrollments(Set<Enrollment> enrollments) {
-        this.enrollments = enrollments;
-    }
-
-    public Set<Deliberation> getDeliberations() {
-        return deliberations;
-    }
-
-    public void setDeliberations(Set<Deliberation> deliberations) {
-        this.deliberations = deliberations;
-    }
 }

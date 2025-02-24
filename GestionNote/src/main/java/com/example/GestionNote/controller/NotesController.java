@@ -31,11 +31,14 @@ public class NotesController {
     @Autowired
     private UserRepository userRepository;
     @Autowired
+    private com.example.GestionNote.service.studentsServices studentsServices;
+    @Autowired
+    private ActivityLogService activityLogService;
+
+    @Autowired
     private ModuleServices moduleServices;
     @Autowired
     private StudentServices studentServices;
-    @Autowired
-    private ActivityLogService activityLogService;
     @Autowired
     private EnrollmentServices enrollmentServices;
     @Autowired
@@ -229,7 +232,5 @@ public class NotesController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
-
-
 }
 
