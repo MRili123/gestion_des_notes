@@ -6,6 +6,26 @@
 >
 <head>
     <title layout:fragment="title">Home - Admin Notes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* Hover & Animation */
+        .card-hover {
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            cursor: pointer;
+        }
+        .card-hover:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Ensure h5 title color is consistent */
+        .card-hover .card-title {
+            color: white; /* Set the desired color */
+        }
+        .card-hover:hover .card-title {
+            color: white; /* Make sure it doesn't change on hover */
+        }
+    </style>
 </head>
 
 <body>
@@ -17,7 +37,21 @@
         <div class="breadcrumb-main">
             <h4 class="text-capitalize breadcrumb-title">Welcome to Admin Notes</h4>
         </div>
-        <p>Here you have access to students and their notes . Click on the links in the sidebar to navigate</p>
+        <div class="row g-4">
+            <!-- Students -->
+            <div class="col-xl-3 col-lg-4 col-md-6">
+                <a th:href="@{/AdminNotes/students}" class="text-decoration-none">
+                    <div class="card text-white bg-success shadow-sm rounded card-hover">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">
+                                <i class="fa-solid fa-person-chalkboard"></i> Students
+                            </h5>
+                            <p class="card-text fs-4 fw-bold" th:text="${totalStudents}">0</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
     </div>
 
 </div>
