@@ -22,17 +22,17 @@
                                 <h4>Filières</h4>
                                 <div class="adv-table-table__button">
                                     <div class="atbd-button-list d-flex flex-wrap">
-                                        <button class="btn btn-sm btn-squared btn-transparent-warning" data-toggle="modal" data-target="#update-xlsx-modal">
+                                        <button th:attr="disabled=${!user.enabled}" class="btn btn-sm btn-squared btn-transparent-warning" data-toggle="modal" data-target="#update-xlsx-modal">
                                             <span data-feather="upload"></span>
                                             Update from XLSX
                                         </button>
 
-                                        <button class="btn btn-sm btn-squared btn-transparent-success" data-toggle="modal" data-target="#add-xlsx-modal">
+                                        <button th:attr="disabled=${!user.enabled}" class="btn btn-sm btn-squared btn-transparent-success" data-toggle="modal" data-target="#add-xlsx-modal">
                                             <span data-feather="upload"></span>
                                             Add from XLSX
                                         </button>
 
-                                        <button class="btn btn-success btn-sm btn-squared" data-toggle="modal" data-target="#add-modal">
+                                        <button th:attr="disabled=${!user.enabled}" class="btn btn-success btn-sm btn-squared" data-toggle="modal" data-target="#add-modal">
                                             <span data-feather="plus"></span>
                                             Add New
                                         </button>
@@ -97,7 +97,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <ul class="orderDatatable_actions mb-0 d-flex flex-wrap">
+                                        <ul class="orderDatatable_actions mb-0 d-flex flex-wrap" th:if="${user.enabled}">
                                             <li>
                                                 <a href="#" class="view" id="download-structure" th:attr="data-id=${filiere.id}">
                                                     <span data-feather="download"></span>
@@ -118,6 +118,11 @@
                                                 </a>
                                             </li>
                                         </ul>
+                                        <div class="userDatatable-content d-inline-block" th:if="${!user.enabled}">
+                                           <span class="rounded-pill userDatatable-content-status bg-opacity-danger color-danger">
+                                                Disabled
+                                           </span>
+                                        </div>
                                     </td>
 
                                 </tr>

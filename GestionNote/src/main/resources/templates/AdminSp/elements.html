@@ -22,7 +22,7 @@
                                 <h4>Elements</h4>
                                 <div class="adv-table-table__button">
 
-                                    <button class="btn btn-success btn-default btn-squared" data-toggle="modal" data-target="#add-modal">
+                                    <button th:attr="disabled=${!user.enabled}" class="btn btn-success btn-default btn-squared" data-toggle="modal" data-target="#add-modal">
                                         Add
                                     </button>
 
@@ -62,7 +62,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <ul class="orderDatatable_actions mb-0 d-flex flex-wrap">
+                                        <ul class="orderDatatable_actions mb-0 d-flex flex-wrap" th:if="${user.enabled}">
                                             <li>
                                                 <a href="#" class="edit" data-toggle="modal" data-target="#edit-modal"
                                                    th:attr="data-id=${element.id}, data-title=${element.title}, data-module=${element.module.id}">
@@ -75,6 +75,11 @@
                                                 </a>
                                             </li>
                                         </ul>
+                                        <div class="userDatatable-content d-inline-block" th:if="${!user.enabled}">
+                                           <span class="rounded-pill userDatatable-content-status bg-opacity-danger color-danger">
+                                                Disabled
+                                           </span>
+                                        </div>
                                     </td>
 
                                 </tr>
