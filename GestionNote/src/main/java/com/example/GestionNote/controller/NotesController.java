@@ -6,6 +6,7 @@ import com.example.GestionNote.model.Module;
 import com.example.GestionNote.repository.UserRepository;
 import com.example.GestionNote.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.Banner;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -61,7 +62,9 @@ public class NotesController {
     }
 
     @RequestMapping("/home")
-    public String home() {
+    public String home(Model model) {
+        int totalStudents = studentServices.getStudents().size();
+        model.addAttribute("totalStudents", totalStudents);
         return "AdminNotes/home";
     }
 
