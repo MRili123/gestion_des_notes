@@ -1,10 +1,13 @@
 package com.example.GestionNote.service;
 
 import com.example.GestionNote.model.ActivityLog;
+import com.example.GestionNote.model.Role;
 import com.example.GestionNote.model.User;
 import com.example.GestionNote.repository.ActivityLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ActivityLogService {
@@ -18,5 +21,9 @@ public class ActivityLogService {
         User user = userServices.getUserById(userId);
         ActivityLog activityLog = new ActivityLog(action, user);
         activityLogRepository.save(activityLog);
+    }
+
+    public List<ActivityLog> getAdminNotesActivityLogs() {
+        return activityLogRepository.getActivityLogsByUserRole(Role.ADMIN_NOTES);
     }
 }
