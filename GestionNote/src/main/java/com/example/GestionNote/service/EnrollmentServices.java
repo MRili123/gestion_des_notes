@@ -53,4 +53,8 @@ public class EnrollmentServices {
         }
         return academicYears;
     }
+
+    public Long countByModuleIdAndAcademicYearAndResultIsNotNull(int moduleId, String academicYear) {
+        return enrollmentRepository.countByModuleId_AndAcademicYearAndResultIsNotNull(moduleId, academicYear);
+    }
 }

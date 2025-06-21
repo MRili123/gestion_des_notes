@@ -81,6 +81,9 @@
                                 <li class="l_sidebar">
                                     <a th:href="@{/AdminNotes/deliberations}" data-layout="light">Deliberations</a>
                                 </li>
+                                <li class="l_sidebar">
+                                    <a th:href="@{/AdminNotes/activity}" data-layout="light">Activity Logs</a>
+                                </li>
                             </ul>
                         </li>
                     </ul>
@@ -91,30 +94,31 @@
 
         <div class="navbar-right">
             <ul class="navbar-right__menu">
+                <li th:if="${!user.enabled}">
+                    <div class="alert-icon-area alert alert-danger " role="alert">
+                        <div class="alert-icon">
+                            <span data-feather="info"></span>
+                        </div>
+                        <div class="alert-content">
+                            <p>Your account is disabled</p>
+                        </div>
+                    </div>
+                </li>
                 <li class="nav-author">
                     <div class="dropdown-custom">
-                        <a href="javascript:;" class="nav-item-toggle"><img src="/img/author-nav.jpg" alt="" class="rounded-circle"></a>
+                        <a href="javascript:;" class="nav-item-toggle"><img src="/img/svg/user.svg" alt=""
+                                                                            class="rounded-circle"></a>
                         <div class="dropdown-wrapper">
                             <div class="nav-author__info">
                                 <div class="author-img">
-                                    <img src="/img/author-nav.jpg" alt="" class="rounded-circle">
+                                    <img src="/img/svg/user.svg" alt="" class="rounded-circle">
                                 </div>
                                 <div>
-                                    <h6><span th:text="${user.firstName} + ' ' + ${user.lastName}" >fullname</span></h6>
+                                    <h6><span th:text="${user.firstName} + ' ' + ${user.lastName}">fullname</span></h6>
                                     <span th:text="${user.username}">username</span>
                                 </div>
                             </div>
                             <div class="nav-author__options">
-                                <ul>
-                                    <li>
-                                        <a href="">
-                                            <span data-feather="settings"></span> Settings</a>
-                                    </li>
-                                    <li>
-                                        <a href="">
-                                            <span data-feather="users"></span> Activity</a>
-                                    </li>
-                                </ul>
                                 <a th:href="@{/logout}" class="nav-author__signout">
                                     <span data-feather="log-out"></span> Sign Out
                                 </a>
@@ -163,6 +167,13 @@
                         <a th:href="@{/AdminNotes/deliberations}" class="">
                             <span data-feather="disc" class="nav-icon"></span>
                             <span class="menu-text">Deliberations</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a th:href="@{/AdminNotes/activity}" class="">
+                            <span data-feather="disc" class="nav-icon"></span>
+                            <span class="menu-text">Activity Logs</span>
                         </a>
                     </li>
 

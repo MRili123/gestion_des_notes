@@ -273,10 +273,33 @@ public class NotesController {
 
     @RequestMapping("/deliberation/generate")
     @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
-    public ResponseEntity<byte[]> generateDeliberationFile(@RequestParam("levelId") int levelId, @RequestParam("academicYear") String academicYear, Model model) {
+    public Object generateDeliberationFile(@RequestParam("levelId") int levelId, @RequestParam("academicYear") String academicYear, Model model) {
         try {
             Level level = levelServices.getLevelById(levelId);
             if (level == null) return ResponseEntity.notFound().build();
+
+
+            // Check if there are modules for this level
+            List<Module> modules = moduleServices.getModulesByLevelId(levelId);
+            if (modules == null || modules.isEmpty()) {
+                model.addAttribute("errorMessage", "No modules found for this level.");
+                return "error";
+            }
+
+            // Check if there are enrollments for these modules in the specified academic year
+            boolean hasEnrollments = false;
+            for (Module module : modules) {
+                long enrollmentCount = enrollmentServices.countByModuleIdAndAcademicYearAndResultIsNotNull(module.getId(), academicYear);
+                if (enrollmentCount > 0) {
+                    hasEnrollments = true;
+                    break;
+                }
+            }
+
+            if (!hasEnrollments) {
+                model.addAttribute("errorMessage", "No enrollments found for the specified academic year, or students enrolled haven't completed any session yet.");
+                return "error";
+            }
 
             byte[] deliberationFile = deliberationServices.generateDeliberationFile(level, academicYear);
             String fileName = "deliberation_" + level.getAlias() + ".xlsx";
@@ -324,6 +347,14 @@ public class NotesController {
         catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
+    }
+
+    @RequestMapping("/activity")
+    @PreAuthorize("@userRepository.findByUsername(authentication.name).get().enabled == true")
+    public String activityLogs(Model model) {
+        List<ActivityLog> activities = activityLogService.getAdminNotesActivityLogs();
+        model.addAttribute("activities", activities);
+        return "AdminNotes/activity";
     }
 }
 
